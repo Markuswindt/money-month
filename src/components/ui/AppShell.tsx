@@ -17,6 +17,24 @@ const TABS = [
  * Erfassen ist die mit Abstand haeufigste Handlung und darf nie mehr als
  * einen Tipp entfernt sein.
  */
+// Links/rechts der Luecke fuer den FAB - zwei plus zwei, damit der Knopf
+// mittig zwischen "Ausgaben" und "Fixkosten" auftaucht.
+const LEFT_TABS = TABS.slice(0, 2);
+const RIGHT_TABS = TABS.slice(2);
+
+function TabLink({ to, label, Icon, end }: (typeof TABS)[number]) {
+  return (
+    <NavLink
+      to={to}
+      end={end}
+      className={({ isActive }) => (isActive ? `${s.tab} ${s.tabActive}` : s.tab)}
+    >
+      <Icon size={20} strokeWidth={1.75} aria-hidden />
+      {label}
+    </NavLink>
+  );
+}
+
 export function AppShell({ children, onAdd }: { children: ReactNode; onAdd: () => void }) {
   // Unter "Mehr" wird nichts erfasst - dort verdeckt der Knopf nur Inhalt.
   const showAdd = !useLocation().pathname.startsWith('/mehr');
@@ -25,23 +43,25 @@ export function AppShell({ children, onAdd }: { children: ReactNode; onAdd: () =
     <div className={s.shell}>
       <nav className={s.tabBar} aria-label="Hauptnavigation">
         <span className={s.brand}>Money&gt;Month</span>
-        {TABS.map(({ to, label, Icon, end }) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={end}
-            className={({ isActive }) => (isActive ? `${s.tab} ${s.tabActive}` : s.tab)}
-          >
-            <Icon size={20} strokeWidth={1.75} aria-hidden />
-            {label}
-          </NavLink>
-        ))}
-        {showAdd && (
-          <button type="button" className={s.fab} onClick={onAdd} aria-label="Ausgabe erfassen">
-            <Plus size={24} strokeWidth={2} aria-hidden />
-            <span className={s.fabLabel}>Erfassen</span>
-          </button>
-        )}
+        <div className={s.tabGroup}>
+          {LEFT_TABS.map((tab) => <TabLink key={tab.to} {...tab} />)}
+        </div>
+
+        {/* Leerer Slot bleibt bestehen, auch wenn der Knopf ausgeblendet
+            ist - sonst ruecken die Tab-Gruppen beim Wechsel zu "Mehr"
+            zusammen und die Breiten springen. */}
+        <div className={s.fabSlot}>
+          {showAdd && (
+            <button type="button" className={s.fab} onClick={onAdd} aria-label="Ausgabe erfassen">
+              <Plus size={24} strokeWidth={2} aria-hidden />
+              <span className={s.fabLabel}>Erfassen</span>
+            </button>
+          )}
+        </div>
+
+        <div className={s.tabGroup}>
+          {RIGHT_TABS.map((tab) => <TabLink key={tab.to} {...tab} />)}
+        </div>
       </nav>
 
       <main className={s.main}>{children}</main>
