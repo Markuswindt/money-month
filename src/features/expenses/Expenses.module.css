@@ -46,9 +46,10 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-4);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4);
   background: var(--bg-canvas);
   font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
   color: var(--text-secondary);
 }
 .dayTotal { font-variant-numeric: tabular-nums; }

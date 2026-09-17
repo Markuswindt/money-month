@@ -8,6 +8,7 @@
 .section { display: grid; gap: var(--space-4); }
 
 .row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-4);
@@ -15,9 +16,15 @@
   min-height: var(--list-row-min-height);
   padding: var(--space-3) var(--space-4);
   text-align: left;
+}
+.row:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: 0;
   border-bottom: 1px solid var(--border-subtle);
 }
-.row:last-child { border-bottom: none; }
 button.row, a.row { cursor: pointer; text-decoration: none; color: inherit; }
 button.row:hover, a.row:hover { background: var(--bg-hover); }
 
