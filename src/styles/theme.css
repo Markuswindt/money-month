@@ -1,0 +1,134 @@
+/* =========================================================================
+   Semantische Farbtokens
+
+   Akzent gold, Neutral sand. Flaechen kommen aus der Gold-Skala: eine
+   leicht warme Seite, darauf hellere Karten, die per Schatten abheben -
+   statt per Umrandung.
+
+   Die meisten Tokens brauchen keine .dark-Variante: sie zeigen auf
+   --gold-3, --sand-11 usw., und diese Variablen wechseln ihren Wert
+   bereits selbst, sobald .dark am <html> haengt. Nur wo der Dunkelmodus
+   eine ANDERE Stufe braucht, steht unten ein Override.
+   ========================================================================= */
+
+:root {
+  /* --- Flaechen ---------------------------------------------------------
+     Seite gold-2 (#faf9f2), Karten gold-1 (#fdfdfc): die Karte ist HELLER
+     als der Grund und hebt sich zusammen mit dem Schatten ab. */
+  --bg-canvas: var(--gold-2);
+  --bg-surface: var(--gold-1);
+  --bg-subtle: var(--gold-3);     /* Eingabefelder, Chart-Spuren, Chips   */
+  --bg-hover: var(--gold-4);
+  --bg-active: var(--gold-5);
+  /* Eine Stufe ueber ALLEN anderen Flaechen - fuer Elemente, die aus einer
+     gefuellten Spur herausstehen sollen (aktives Segment). Im Dunkelmodus
+     ist das nicht dieselbe Stufe: dort liegt gold-1 unten, nicht oben. */
+  --bg-elevated: var(--gold-1);
+
+  /* --- Linien -----------------------------------------------------------
+     Nur noch Trennlinien INNERHALB von Karten - Container tragen keine
+     Umrandung mehr, sondern einen Schatten. */
+  --border-subtle: var(--gold-4);
+  --border-default: var(--gold-6);
+  --border-strong: var(--gold-7);
+
+  /* --- Text ----------------------------------------------------------- */
+  /* sand-12 auf der Karte: 16,0:1 hell / 15,0:1 dunkel
+     sand-11 auf der Karte:  5,9:1 hell /  8,3:1 dunkel */
+  --text-primary: var(--sand-12);
+  --text-secondary: var(--sand-11);
+
+  /* --- Schatten ---------------------------------------------------------
+     Zwei Lagen: eine harte, sehr kurze Kante fuer die Abgrenzung und eine
+     weiche, weite fuer die Hoehe. Eine einzelne Lage wirkt entweder
+     schmutzig oder gar nicht. */
+  --shadow-card: 0 1px 2px rgb(60 52 38 / 0.05), 0 2px 8px rgb(60 52 38 / 0.06);
+  --shadow-card-hover: 0 2px 4px rgb(60 52 38 / 0.07), 0 8px 20px rgb(60 52 38 / 0.10);
+  --shadow-sheet: 0 -2px 32px rgb(0 0 0 / 0.14);
+  --shadow-fab: 0 2px 6px rgb(0 0 0 / 0.14), 0 8px 24px rgb(0 0 0 / 0.14);
+
+  /* --- Akzent ---------------------------------------------------------
+     Gold ist eine kontrastschwache Skala. gold-9 als Flaeche traegt
+     weissen Text nur mit 3,65:1 und verfehlt damit AA. Fuer farbige
+     Flaechen ist deshalb gold-11 gesetzt; gold-9 bleibt fuer Elemente
+     ohne Text darauf, wo 3:1 genuegt. */
+  --accent-text: var(--gold-11);
+  --accent-indicator: var(--gold-9);
+  --accent-bg: var(--gold-3);
+  --accent-bg-hover: var(--gold-4);
+  --accent-border: var(--gold-7);
+
+  /* --- Hauptaktion ------------------------------------------------------
+     Bewusst invers: in hell fast schwarz, in dunkel fast weiss. Das ist
+     die einzige Flaeche der App, die den Grund vollstaendig umkehrt -
+     dadurch ist immer eindeutig, was die Hauptaktion ist.
+
+     Die Werte sind sand-1 und sand-12 des JEWEILS ANDEREN Modus. Die
+     lassen sich nicht per var() erreichen, weil Radix seine Dunkelwerte
+     nur unter .dark ausliefert - deshalb hier ausgeschrieben.
+     Kontrast in beiden Richtungen: 16,3:1 bzw. 16,0:1. */
+  --cta-bg: #111110;        /* sand-1  aus dem Dunkelmodus */
+  --cta-text: #eeeeec;      /* sand-12 aus dem Dunkelmodus */
+  --cta-bg-hover: #2a2a28;  /* sand-4  aus dem Dunkelmodus */
+
+  /* --- Fokus ----------------------------------------------------------
+     Eigenes Token, weil der Ring auf JEDER Flaeche sichtbar bleiben muss -
+     auch auf der inversen Hauptaktion. */
+  --focus-ring: var(--gold-9);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* --- Semantik -------------------------------------------------------- */
+  --danger-text: var(--red-11);
+  --danger-bg: var(--red-3);
+  --danger-solid: var(--red-9);
+
+  /* Stufe 12 statt 11: amber ist eine der hellen Skalen, ihre Stufe 11
+     erreicht auf amber-3 im hellen Modus nur 4,25:1. */
+  --warning-text: var(--amber-12);
+  --warning-bg: var(--amber-3);
+
+  /* --- Chartfarben ------------------------------------------------------
+     Fix vs. variabel sind die einzigen beiden Farben der App, bei denen
+     die Farbe allein eine Kategorie bezeichnet - entsprechend geprueft.
+
+     gold-9 gegen sand-9 war die naheliegende Wahl und faellt durch:
+     ΔE 4,6 fuer Normalsichtige, weil sand der mit dem Gold-Ton
+     gesaettigte Grauton IST. Stattdessen gold-11 gegen slate, je Modus
+     einzeln gewaehlt statt gespiegelt:
+       hell    gold-11 #71624b / slate-9  #8b8d98
+       dunkel  gold-11 #cbb99f / slate-10 #777b84
+     Beide Werte stehen zusaetzlich als Zahl daneben. */
+  --expense-fixed: var(--gold-11);
+  --expense-variable: var(--slate-9);
+
+  /* Rangliste: EIN Farbton fuer alle Balken. Ein Balkendiagramm
+     beantwortet eine Groessenfrage, keine Identitaetsfrage - vierzehn
+     Kategoriefarben waeren hier messbar nicht unterscheidbar
+     (purple/violet ΔE 1,1, lime/grass 4,6). */
+  --chart-magnitude: var(--gold-9);
+  --chart-track: var(--gold-4);
+}
+
+.dark {
+  /* Im Dunkelmodus traegt ein Schatten keine Hoehe mehr - dort hebt sich
+     eine Karte dadurch ab, dass sie HELLER ist als der Grund. Seite und
+     Karte tauschen deshalb die Stufen. */
+  --bg-canvas: var(--gold-1);
+  --bg-surface: var(--gold-2);
+  --bg-elevated: var(--gold-4);
+
+  /* gold-11 ist hier ein HELLES Gold. Die Hauptaktion kehrt entsprechend
+     in die andere Richtung um. */
+  --cta-bg: #fdfdfc;        /* sand-1  aus dem Hellmodus */
+  --cta-text: #21201c;      /* sand-12 aus dem Hellmodus */
+  --cta-bg-hover: #e9e8e6;  /* sand-4  aus dem Hellmodus */
+
+  /* slate-9 ist auf Dunkelgrund zu dunkel, um sich von gold-11 zu loesen. */
+  --expense-variable: var(--slate-10);
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 2px 8px rgb(0 0 0 / 0.3);
+  --shadow-card-hover: 0 2px 4px rgb(0 0 0 / 0.45), 0 8px 20px rgb(0 0 0 / 0.35);
+  --shadow-sheet: 0 -2px 32px rgb(0 0 0 / 0.55);
+  --shadow-fab: 0 2px 6px rgb(0 0 0 / 0.5), 0 8px 24px rgb(0 0 0 / 0.4);
+}

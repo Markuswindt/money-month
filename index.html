@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+
+    <!-- viewport-fit=cover: die App zeichnet bis unter Notch und Home-Indicator,
+         das Layout haelt sich per env(safe-area-inset-*) selbst frei.
+         Zoom bleibt bewusst erlaubt (a11y) - gegen den iOS-Auto-Zoom beim
+         Fokus helfen die 16px Mindestgroesse auf Inputs, nicht maximum-scale. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>Money&gt;Month</title>
+    <meta name="description" content="Fixe und variable Ausgaben im Blick - offline, lokal, ohne Konto." />
+
+    <!-- Faerbt Statusleiste bzw. Browser-Chrome passend zum Theme. -->
+    <meta name="theme-color" content="#fdfdfc" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111110" media="(prefers-color-scheme: dark)" />
+
+    <!-- Standalone-Modus. mobile-web-app-capable ist der Standard,
+         apple-* haelt aeltere iOS-Versionen bei Laune. -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Money&gt;Month" />
+
+    <!-- iOS ignoriert das Manifest-Icon. Dieses PNG muss opak sein,
+         transparente Bereiche rendert iOS schwarz. -->
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Ohne das faerbt iOS Betraege und Datumsangaben als Telefonlinks ein. -->
+    <meta name="format-detection" content="telephone=no" />
+  </head>
+  <body>
+    <script>
+      // Laeuft vor dem ersten Paint. Ohne das blitzt beim Start kurz das
+      // helle Theme auf, bevor React den Dunkelmodus setzen kann.
+      (function () {
+        var mode = 'light';
+        try {
+          var saved = localStorage.getItem('mm-theme');
+          mode = (saved === 'light' || saved === 'dark')
+            ? saved
+            : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        } catch (e) {
+          // Privater Modus oder blockierte Site-Daten: Systemtheme versuchen,
+          // sonst hell. Ein Fehler hier darf die App nicht aufhalten.
+          try {
+            mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          } catch (e2) { mode = 'light'; }
+        }
+        document.documentElement.classList.add(mode);
+      })();
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

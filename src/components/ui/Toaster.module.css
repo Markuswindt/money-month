@@ -1,0 +1,44 @@
+.viewport {
+  position: fixed;
+  z-index: 40;
+  left: var(--space-4);
+  right: var(--space-4);
+  /* Ueber der Tab-Leiste, damit die Meldung die Navigation nicht verdeckt. */
+  bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom) + var(--space-4));
+  width: auto;
+}
+@media (min-width: 64rem) {
+  .viewport { left: auto; right: var(--space-7); bottom: var(--space-7); width: 22rem; }
+}
+
+.toast {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: calc(100 - var(--toast-index));
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-3);
+  background: var(--sand-12);
+  color: var(--sand-1);
+  box-shadow: var(--shadow-fab);
+  transform: translateY(calc(var(--toast-index) * -0.5rem)) scale(calc(1 - var(--toast-index) * 0.04));
+  transition: transform var(--duration-slow) var(--easing-standard),
+              opacity var(--duration-base) var(--easing-standard);
+}
+.toast[data-starting-style],
+.toast[data-ending-style] { opacity: 0; transform: translateY(1.5rem); }
+
+.title { font-size: var(--font-size-3); line-height: var(--line-height-3); flex: 1; }
+
+.action {
+  margin-left: auto;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-2);
+  font-size: var(--font-size-3);
+  font-weight: var(--font-weight-medium);
+  color: var(--sand-1);
+  text-decoration: underline;
+  flex: none;
+}

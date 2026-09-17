@@ -1,0 +1,401 @@
+/* =========================================================================
+   Wiederverwendbare Design-System-Klassen.
+
+   Global und nicht als CSS-Modul, weil es sich um Bausteine des Systems
+   handelt - Button, Card, Chip, Listenzeile. Bildschirmspezifisches Layout
+   liegt weiterhin in CSS-Modulen neben der jeweiligen Komponente.
+   ========================================================================= */
+
+/* ----------------------------------------------------------- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  height: var(--control-height-lg);
+  padding-inline: var(--space-5);
+  border-radius: var(--radius-3);
+  font-size: var(--font-size-4);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  user-select: none;
+  transition: background-color var(--duration-fast) var(--easing-standard),
+              color var(--duration-fast) var(--easing-standard);
+}
+.btn:disabled { opacity: 0.45; cursor: default; }
+
+/* Invers zum Grund: in hell fast schwarz, in dunkel fast weiss.
+   Die einzige Flaeche, die den Untergrund vollstaendig umkehrt - dadurch
+   ist die Hauptaktion auf jedem Bildschirm sofort auffindbar. */
+.btn--primary { background: var(--cta-bg); color: var(--cta-text); }
+.btn--primary:hover:not(:disabled) { background: var(--cta-bg-hover); }
+.btn--primary:active:not(:disabled) { background: var(--cta-bg-hover); }
+
+.btn--secondary {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+.btn--secondary:hover:not(:disabled) { background: var(--bg-hover); }
+
+.btn--ghost { background: transparent; color: var(--text-secondary); }
+.btn--ghost:hover:not(:disabled) { background: var(--bg-hover); color: var(--text-primary); }
+
+.btn--danger { background: transparent; color: var(--danger-text); }
+.btn--danger:hover:not(:disabled) { background: var(--danger-bg); }
+
+.btn--md { height: var(--control-height-md); font-size: var(--font-size-3); padding-inline: var(--space-4); }
+.btn--sm { height: var(--control-height-sm); font-size: var(--font-size-3); padding-inline: var(--space-3); }
+.btn--block { width: 100%; }
+
+/* Echte 44 x 44 px. Eine unsichtbar vergroesserte Flaeche waere zwar
+   kompakter, wird aber von nachfolgenden Elementen ueberdeckt - der
+   Treffertest unten hat genau das gezeigt. */
+.btn--icon {
+  display: grid;
+  place-items: center;
+  width: var(--tap-target-min);
+  height: var(--tap-target-min);
+  padding: 0;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+}
+.btn--icon:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+/* ------------------------------------------------------------- Cards --- */
+/* Kein Rahmen mehr: die Karte hebt sich dadurch ab, dass sie heller ist
+   als die Seite, plus ein weicher Schatten. Eine Umrandung wuerde beides
+   wieder zu einer flachen Flaeche zusammenziehen. */
+.card {
+  background: var(--bg-surface);
+  border-radius: var(--radius-4);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+.card--flush { padding: 0; overflow: hidden; }
+
+/* Textlinks in Abschnittskoepfen ("Alle anzeigen") sind nur zeilenhoch. */
+.inlineLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-target-min);
+  color: var(--accent-text);
+  text-decoration: none;
+  font-size: var(--font-size-3);
+}
+.inlineLink:hover { text-decoration: underline; }
+
+.sectionTitle {
+  font-size: var(--font-size-1);
+  line-height: var(--line-height-1);
+  letter-spacing: var(--letter-spacing-1);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+/* ------------------------------------------------------------- Chips --- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  /* 44 px statt der kompakten 36: Filter-Chips und der Zeitraumwechsel
+     sind nach dem Plus-Knopf die meistgetippten Elemente der App. Unter
+     dem HIG-Mindestmass trifft man sie auf dem Telefon zu oft daneben. */
+  min-height: var(--control-height-lg);
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-3);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: var(--font-size-3);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  user-select: none;
+  transition: background-color var(--duration-fast) var(--easing-standard);
+}
+.chip:hover { background: var(--bg-hover); }
+/* Ausgewaehlt wird ueber Flaeche und Textfarbe angezeigt, nicht ueber
+   einen Rahmen. */
+.chip[data-selected] {
+  background: var(--cta-bg);
+  color: var(--cta-text);
+}
+
+/* Kategorie-Chip: faerbt sich aus den --cat-* Variablen, die
+   categoryColorVars() per inline style setzt. */
+.chip--category[data-selected] {
+  background: var(--cat-bg);
+  /* Stufe 12, nicht 11 - als Text auf getoenter Flaeche verfehlt Stufe 11
+     bei orange die 4,5:1. */
+  color: var(--cat-text);
+}
+
+/* -------------------------------------------------- Segmented Control --- */
+.segmented {
+  display: inline-flex;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: var(--bg-subtle);
+  border-radius: var(--radius-3);
+}
+.segmented__item {
+  flex: 1;
+  min-height: var(--control-height-lg);
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-2);
+  font-size: var(--font-size-3);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  transition: background-color var(--duration-fast) var(--easing-standard);
+}
+.segmented__item[data-pressed] {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-card);
+}
+
+/* -------------------------------------------------------- Listenzeile --- */
+.listRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: var(--list-row-min-height);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background-color var(--duration-fast) var(--easing-standard);
+}
+.listRow:last-child { border-bottom: none; }
+a.listRow, button.listRow { cursor: pointer; }
+a.listRow:hover, button.listRow:hover { background: var(--bg-hover); }
+
+.listRow__body { min-width: 0; flex: 1; }
+.listRow__title {
+  display: block;
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.listRow__meta {
+  display: block;
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.listRow__amount {
+  margin-left: auto;
+  font-size: var(--font-size-4);
+  flex: none;
+}
+
+/* Farbpunkt einer Kategorie. Visuell 10px, Trefferflaeche uebernimmt die
+   umgebende Zeile. */
+.catDot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: var(--radius-full);
+  background: var(--cat-fg);
+  flex: none;
+}
+.catBadge {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-3);
+  background: var(--cat-bg);
+  color: var(--cat-fg);
+  flex: none;
+}
+
+/* ----------------------------------------------------------- Leerraum --- */
+.emptyState {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  padding: var(--space-10) var(--space-5);
+  text-align: center;
+  color: var(--text-secondary);
+}
+.emptyState__title {
+  font-size: var(--font-size-4);
+  color: var(--text-primary);
+  font-weight: var(--font-weight-medium);
+}
+.emptyState__hint { font-size: var(--font-size-3); max-width: 24rem; }
+
+/* ------------------------------------------------------------ Eingabe --- */
+.input,
+.select {
+  width: 100%;
+  min-height: var(--control-height-lg);
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-2);
+  border: none;
+  /* Gefuellt statt umrandet - dieselbe Sprache wie Chips und Karten. */
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+/* ------------------------------------------------------------- Select --- */
+/* Der Ausloeser sieht aus wie ein Eingabefeld (.select oben), traegt aber
+   zusaetzlich Wert und Chevron nebeneinander. */
+.select {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: left;
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  cursor: pointer;
+}
+.select:hover { background: var(--bg-hover); }
+
+.select__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.select__value[data-placeholder] { color: var(--text-secondary); }
+
+/* Der Kasten ist genau eine Zeilenhoehe hoch und breit. Damit sitzt das
+   Chevron auf derselben Zeile wie der Wert und der rechte Innenabstand
+   (--space-4) gilt fuer beide gleich - vorher zeichnete der Browser seinen
+   eigenen Pfeil ausserhalb dieser Polsterung direkt an die Kante. */
+.select__icon {
+  display: grid;
+  place-items: center;
+  width: var(--icon-size-3);
+  height: var(--icon-size-3);
+  flex: none;
+  color: var(--text-secondary);
+  transition: transform var(--duration-fast) var(--easing-standard);
+}
+/* Groesse ueber CSS statt ueber lucides size-Prop: so bleibt das Token die
+   einzige Quelle und der Glyph skaliert mit der Zeilenhoehe mit. */
+.select__icon > svg {
+  width: var(--icon-size-3);
+  height: var(--icon-size-3);
+}
+.select[data-popup-open] .select__icon { transform: rotate(180deg); }
+
+.selectPositioner {
+  /* Ueber dem Sheet (21) und seiner Abdeckung (20). */
+  z-index: 60;
+  outline: none;
+}
+
+.selectPopup {
+  min-width: var(--anchor-width);
+  max-height: var(--available-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-2);
+  border-radius: var(--radius-3);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card-hover);
+  outline: none;
+  transform-origin: var(--transform-origin);
+  transition: opacity var(--duration-fast) var(--easing-standard),
+              transform var(--duration-fast) var(--easing-standard);
+}
+.selectPopup[data-starting-style],
+.selectPopup[data-ending-style] { opacity: 0; transform: scale(0.97); }
+
+.selectItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  /* Dasselbe Mindestmass wie jedes andere Tippziel der App. */
+  min-height: var(--tap-target-min);
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-2);
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+/* data-highlighted deckt Maus UND Tastatur ab - ein :hover allein liesse
+   die Pfeiltastenbedienung ohne sichtbare Position. */
+.selectItem[data-highlighted] { background: var(--bg-hover); }
+.selectItem[data-selected] { font-weight: var(--font-weight-medium); }
+
+.selectItem__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selectItem__check {
+  display: grid;
+  place-items: center;
+  width: var(--icon-size-2);
+  height: var(--icon-size-2);
+  flex: none;
+  color: var(--accent-text);
+}
+.selectItem__check > svg {
+  width: var(--icon-size-2);
+  height: var(--icon-size-2);
+}
+.input::placeholder { color: var(--text-secondary); opacity: 0.7; }
+
+/* Datumsfeld: der Browser zeichnet sein Kalendersymbol selbst. Ohne die
+   Angaben hier ist es rund 13 px gross - kleiner als jedes andere Symbol
+   der App - und im Dunkelmodus schwarz auf dunklem Grund, also praktisch
+   unsichtbar. Der Filter dreht die Helligkeit um, statt eine Farbe zu
+   setzen: faerben laesst sich das Symbol nicht. */
+.input[type='date']::-webkit-calendar-picker-indicator {
+  width: var(--icon-size-2);
+  height: var(--icon-size-2);
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity var(--duration-fast) var(--easing-standard);
+}
+.input[type='date']:hover::-webkit-calendar-picker-indicator { opacity: 0.85; }
+.dark .input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.6;
+}
+.textarea {
+  width: 100%;
+  min-height: 4.5rem;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-2);
+  border: none;
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  resize: vertical;
+  font-family: inherit;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: var(--font-size-3);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+}
+.fieldHint {
+  font-size: var(--font-size-3);
+  color: var(--text-secondary);
+  margin-top: var(--space-3);
+}
+.fieldError {
+  font-size: var(--font-size-3);
+  color: var(--danger-text);
+  margin-top: var(--space-3);
+}

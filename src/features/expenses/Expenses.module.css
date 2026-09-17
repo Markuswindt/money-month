@@ -1,0 +1,53 @@
+.page { display: grid; gap: var(--space-5); }
+
+.search { position: relative; }
+.searchInput { padding-left: var(--space-10); }
+.searchIcon {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+/* Waagerecht scrollende Filterzeile - bei 14 Kategorien waere ein Umbruch
+   auf dem Telefon ein halber Bildschirm voller Chips. */
+.filterScroll {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding-bottom: var(--space-2);
+  margin-inline: calc(-1 * var(--screen-padding));
+  padding-inline: var(--screen-padding);
+  scroll-snap-type: x proximity;
+}
+.filterScroll::-webkit-scrollbar { display: none; }
+.filterScroll > * { scroll-snap-align: start; flex: none; }
+
+.summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-size: var(--font-size-3);
+  color: var(--text-secondary);
+}
+
+.dayGroup { margin-bottom: var(--space-5); }
+.dayHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: color-mix(in oklab, var(--bg-canvas) 92%, transparent);
+  backdrop-filter: blur(8px);
+  font-size: var(--font-size-3);
+  color: var(--text-secondary);
+}
+.dayTotal { font-variant-numeric: tabular-nums; }

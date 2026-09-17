@@ -1,0 +1,95 @@
+@import './radix-colors.css';
+@import './tokens.css';
+@import './theme.css';
+@import './components.css';
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  /* Verhindert, dass iOS Text beim Drehen ins Querformat groesser rechnet. */
+  -webkit-text-size-adjust: 100%;
+  background-color: var(--bg-canvas);
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  -webkit-font-smoothing: antialiased;
+
+  /* Kein grauer Blitz beim Antippen - Zustaende zeigen wir selbst. */
+  -webkit-tap-highlight-color: transparent;
+
+  /* Verhindert, dass ein Scroll am Listenende die ganze Seite mitzieht
+     (Pull-to-refresh in der installierten PWA waere hier nur stoerend). */
+  overscroll-behavior-y: contain;
+}
+
+h1, h2, h3, h4, p, figure { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  /* iOS rendert Buttons sonst mit eigenem Hintergrund und Rundung. */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* HARTE REGEL aus tokens.css, hier erzwungen: Eingabefelder nie unter 16px.
+   Darunter zoomt iOS Safari beim Fokus automatisch hinein. */
+input, select, textarea {
+  font-size: max(var(--font-size-4), 1rem);
+}
+
+a { color: var(--accent-text); }
+
+img, svg { display: block; max-width: 100%; }
+
+/* Nur bei Tastaturfokus sichtbar - ein Ring nach jedem Fingertipp waere Laerm. */
+:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-1);
+}
+:focus:not(:focus-visible) { outline: none; }
+
+/* Geldbetraege stehen in Listen untereinander - ohne tabular-nums
+   tanzen die Ziffern je nach Breite. */
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Sichtbar nur fuer Screenreader. */
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+#root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

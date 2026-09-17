@@ -1,0 +1,201 @@
+/* ------------------------------------------------------- Split-Balken --- */
+.split { display: grid; gap: var(--space-4); }
+
+.splitTrack {
+  display: flex;
+  /* 2-px-Fuge zwischen den Segmenten: ohne sie verschmelzen zwei
+     Flaechen optisch zu einer, sobald die Farben aehnlich hell sind. */
+  gap: 2px;
+  height: 0.75rem;
+  border-radius: var(--radius-1);
+  overflow: hidden;
+  background: var(--chart-track);
+}
+.splitSegment {
+  height: 100%;
+  transition: flex-basis var(--duration-slow) var(--easing-standard);
+}
+/* Radien nur an den Aussenenden - innen laufen die Segmente stumpf
+   gegeneinander, sonst entsteht eine optische Luecke, die es nicht gibt. */
+.splitSegment:first-child { border-radius: var(--radius-1) 0 0 var(--radius-1); }
+.splitSegment:last-child { border-radius: 0 var(--radius-1) var(--radius-1) 0; }
+.splitSegment:only-child { border-radius: var(--radius-1); }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+.legendItem { display: flex; align-items: center; gap: var(--space-3); }
+.legendSwatch {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: var(--radius-1);
+  flex: none;
+}
+.legendText { display: grid; }
+/* Beschriftungen tragen Textfarben, nie die Seriefarbe - das farbige
+   Quadrat daneben traegt die Identitaet. */
+.legendLabel {
+  font-size: var(--font-size-2);
+  line-height: var(--line-height-2);
+  color: var(--text-secondary);
+}
+.legendValue {
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  color: var(--text-primary);
+}
+
+/* ---------------------------------------------------------- Rangliste --- */
+.ranking { display: grid; }
+
+.rankRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  width: 100%;
+  min-height: var(--list-row-min-height);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background-color var(--duration-fast) var(--easing-standard);
+}
+.rankRow:last-child { border-bottom: none; }
+.rankRow:hover { background: var(--bg-hover); }
+
+.rankLabel {
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rankValue {
+  display: block;
+  font-size: var(--font-size-4);
+  line-height: var(--line-height-4);
+  text-align: right;
+}
+.rankShare {
+  display: block;
+  font-size: var(--font-size-2);
+  line-height: var(--line-height-2);
+  color: var(--text-secondary);
+  text-align: right;
+}
+.rankBarCell { grid-column: 1 / -1; }
+.rankBar {
+  display: block;
+  height: 0.375rem;
+  border-radius: var(--radius-1);
+  background: var(--chart-track);
+  overflow: hidden;
+}
+/* Ein Farbton fuer alle Balken: die Frage ist "wie viel", nicht "welche".
+   Die Kategorie steht als Wort daneben. */
+.rankFill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-1);
+  background: var(--chart-magnitude);
+  transition: width var(--duration-slow) var(--easing-standard);
+}
+
+.moreButton {
+  width: 100%;
+  min-height: var(--control-height-lg);
+  font-size: var(--font-size-3);
+  color: var(--accent-text);
+  border-top: 1px solid var(--border-subtle);
+}
+.moreButton:hover { background: var(--bg-hover); }
+
+/* -------------------------------------------------------------- Trend --- */
+/* Bewusst CSS-Balken statt SVG: ein SVG mit viewBox skaliert seine
+   Beschriftungen mit der Breite mit - auf dem Desktop waeren die Achsen
+   dann dreimal so gross wie im Rest der App. */
+.trend { position: relative; }
+
+.trendPlot {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  height: 6rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.trendCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  min-width: 0;
+  padding: 0;
+  border-radius: var(--radius-1) var(--radius-1) 0 0;
+  transition: background-color var(--duration-fast) var(--easing-standard);
+}
+.trendCol:hover { background: var(--bg-hover); }
+
+.trendStack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  /* 2-px-Fuge zwischen gestapelten Segmenten. */
+  gap: 2px;
+  width: 100%;
+  transition: height var(--duration-slow) var(--easing-standard);
+}
+.trendSeg { width: 100%; }
+/* Radius nur am Datenende oben, nie an der Grundlinie - ein unten
+   gerundeter Balken scheint ueber der Achse zu schweben. */
+.trendStack > .trendSeg:first-child { border-radius: var(--radius-1) var(--radius-1) 0 0; }
+
+.trendAxis {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+.trendTick {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-size: var(--font-size-1);
+  line-height: var(--line-height-1);
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.trendTickCurrent { color: var(--text-primary); font-weight: var(--font-weight-semibold); }
+
+.tooltip {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  background: var(--bg-surface);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-card-hover);
+  padding: var(--space-3);
+  min-width: 9rem;
+  display: grid;
+  gap: var(--space-2);
+}
+.tooltipTitle {
+  font-size: var(--font-size-2);
+  color: var(--text-secondary);
+}
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--font-size-3);
+}
+.tooltipRow > span:last-child { margin-left: auto; }
+.tooltipTotal {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-2);
+  font-weight: var(--font-weight-medium);
+}

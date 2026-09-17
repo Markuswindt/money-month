@@ -1,0 +1,132 @@
+.shell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--dashboard-max-width);
+  margin-inline: auto;
+  padding: var(--screen-padding);
+  padding-top: max(var(--screen-padding), env(safe-area-inset-top));
+  /* Platz fuer Tab-Bar und den schwebenden Plus-Knopf darueber. */
+  padding-bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom) + var(--space-11));
+}
+
+/* ------------------------------------------------------------ Tab-Bar --- */
+.tabBar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 10;
+  display: flex;
+  background: color-mix(in oklab, var(--bg-canvas) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-subtle);
+  /* Die Leiste zeichnet bis unter den Home-Indicator, haelt ihre Ziele
+     aber darueber frei. */
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--tab-bar-height);
+  padding-block: var(--space-2);
+  font-size: var(--font-size-2);
+  line-height: var(--line-height-2);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--duration-fast) var(--easing-standard);
+}
+.tabActive { color: var(--accent-text); font-weight: var(--font-weight-medium); }
+
+/* -------------------------------------------------------------- FAB --- */
+.fab {
+  position: fixed;
+  right: var(--space-5);
+  bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom) + var(--space-5));
+  z-index: 11;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-full);
+  background: var(--cta-bg);
+  color: var(--cta-text);
+  box-shadow: var(--shadow-fab);
+  transition: transform var(--duration-fast) var(--easing-standard),
+              background-color var(--duration-fast) var(--easing-standard);
+}
+.fab:hover { background: var(--cta-bg-hover); }
+.fab:active { transform: scale(0.94); }
+
+/* ------------------------------------------------- Desktop: Sidebar --- */
+@media (min-width: 64rem) {
+  .shell { flex-direction: row; }
+
+  .tabBar {
+    position: sticky;
+    top: 0;
+    inset: 0 auto 0 0;
+    flex-direction: column;
+    align-items: stretch;
+    width: 15rem;
+    height: 100dvh;
+    padding: var(--space-6) var(--space-4);
+    gap: var(--space-2);
+    border-top: none;
+    border-right: 1px solid var(--border-subtle);
+    backdrop-filter: none;
+    background: var(--bg-canvas);
+  }
+  .tab {
+    flex: none;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--space-4);
+    min-height: var(--control-height-lg);
+    padding-inline: var(--space-4);
+    border-radius: var(--radius-3);
+    font-size: var(--font-size-4);
+  }
+  .tabActive { background: var(--accent-bg); }
+
+  .main { padding-bottom: var(--space-11); }
+
+  /* Auf dem Desktop ist die Daumenzone kein Thema - der Knopf gehoert
+     dorthin, wo die Navigation ist. */
+  .fab {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: var(--control-height-lg);
+    padding-inline: var(--space-5);
+    gap: var(--space-3);
+    border-radius: var(--radius-3);
+    box-shadow: none;
+    margin-top: var(--space-5);
+  }
+}
+
+.brand {
+  display: none;
+  font-size: var(--font-size-5);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-5);
+  padding-inline: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+@media (min-width: 64rem) { .brand { display: block; } }
+
+.fabLabel { display: none; }
+@media (min-width: 64rem) { .fabLabel { display: inline; font-size: var(--font-size-4); font-weight: var(--font-weight-medium); } }

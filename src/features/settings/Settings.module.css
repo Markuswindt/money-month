@@ -1,0 +1,90 @@
+.page { display: grid; gap: var(--space-7); }
+.title {
+  font-size: var(--font-size-5);
+  line-height: var(--line-height-5);
+  letter-spacing: var(--letter-spacing-5);
+  font-weight: var(--font-weight-semibold);
+}
+.section { display: grid; gap: var(--space-4); }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: var(--list-row-min-height);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.row:last-child { border-bottom: none; }
+button.row, a.row { cursor: pointer; text-decoration: none; color: inherit; }
+button.row:hover, a.row:hover { background: var(--bg-hover); }
+
+.rowBody { flex: 1; min-width: 0; }
+.rowTitle { display: block; font-size: var(--font-size-4); line-height: var(--line-height-4); }
+.rowHint {
+  display: block;
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+  color: var(--text-secondary);
+}
+.rowAside { margin-left: auto; flex: none; color: var(--text-secondary); font-size: var(--font-size-3); }
+
+.note {
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+  color: var(--text-secondary);
+}
+.warning {
+  padding: var(--space-4);
+  border-radius: var(--radius-3);
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+}
+
+.hiddenInput { display: none; }
+
+/* --------------------------------------------------------- Kategorien --- */
+.editorGrid { display: grid; gap: var(--space-5); }
+.colorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.5rem, 1fr));
+  gap: var(--space-3);
+}
+.colorSwatch {
+  aspect-ratio: 1;
+  border-radius: var(--radius-3);
+  border: 2px solid transparent;
+  background: var(--bg-subtle);
+  display: grid;
+  place-items: center;
+}
+.colorSwatchDot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: var(--radius-full);
+}
+/* Die Auswahl wird durch einen Ring markiert, nicht durch eine
+   Umrandung an jedem Feld. */
+.colorSwatchSelected { box-shadow: 0 0 0 2px var(--bg-surface), 0 0 0 4px var(--text-primary); }
+
+.iconGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.75rem, 1fr));
+  gap: var(--space-3);
+}
+.iconTile {
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-3);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+.iconTileSelected {
+  background: var(--cta-bg);
+  color: var(--cta-text);
+}

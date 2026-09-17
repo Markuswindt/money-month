@@ -1,0 +1,200 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  /* Ueber Tab-Leiste (10) und Plus-Knopf (11) - sonst liegt die
+     Navigation auf dem Sheet und verdeckt den Speichern-Knopf. */
+  z-index: 20;
+  min-height: 100dvh;
+  background: rgb(0 0 0 / 0.35);
+  transition: opacity var(--duration-slow) var(--easing-standard);
+  opacity: calc(1 - var(--drawer-swipe-progress, 0));
+}
+.backdrop[data-starting-style],
+.backdrop[data-ending-style] { opacity: 0; }
+/* iOS 26+: der Backdrop muss den ganzen sichtbaren Bereich decken. */
+@supports (-webkit-touch-callout: none) { .backdrop { position: absolute; } }
+
+.viewport {
+  position: fixed;
+  inset: 0;
+  z-index: 21;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.popup {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--content-max-width);
+  max-height: 92dvh;
+  background: var(--bg-surface);
+  /* Nur oben gerundet - unten sitzt das Sheet am Bildschirmrand. */
+  border-radius: var(--radius-5) var(--radius-5) 0 0;
+  box-shadow: var(--shadow-sheet);
+  outline: none;
+  transition: transform var(--duration-slow) var(--easing-standard);
+}
+.popup[data-starting-style],
+.popup[data-ending-style] { transform: translateY(100%); }
+
+/* Drawer.Content sitzt zwischen Popup und Inhalt und wuerde die Flex-Kette
+   unterbrechen - ohne das hier bekommt .body kein flex:1 und der Fuss mit
+   dem Speichern-Knopf rutscht aus dem Bild. */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+@media (min-width: 40rem) {
+  .viewport { align-items: center; padding: var(--space-6); }
+  .popup {
+    border-radius: var(--radius-5);
+    max-height: 86dvh;
+  }
+  .popup[data-starting-style],
+  .popup[data-ending-style] { transform: translateY(1rem); opacity: 0; }
+}
+
+/* Griff zum Ziehen - signalisiert, dass sich das Sheet wegwischen laesst. */
+.handle {
+  width: 2.25rem;
+  height: 0.25rem;
+  border-radius: var(--radius-full);
+  background: var(--border-strong);
+  margin: var(--space-3) auto var(--space-1);
+  flex: none;
+}
+@media (min-width: 40rem) { .handle { display: none; } }
+
+.header {
+  flex: none;
+  padding: var(--space-4) var(--space-5) var(--space-3);
+  display: grid;
+  gap: var(--space-4);
+}
+.title {
+  font-size: var(--font-size-5);
+  line-height: var(--line-height-5);
+  letter-spacing: var(--letter-spacing-5);
+  font-weight: var(--font-weight-semibold);
+}
+.headerRow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+
+/* Der scrollende Teil. Kopf und Fuss bleiben stehen, damit der
+   Speichern-Knopf nie weggescrollt werden muss. */
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: var(--space-3) var(--space-5) var(--space-6);
+  display: grid;
+  gap: var(--space-6);
+}
+
+.footer {
+  flex: none;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  /* Hebt den Fuss ueber die eingeblendete Bildschirmtastatur.
+     Der 0px-Fallback ist Pflicht: die Variable existiert erst, wenn die
+     Tastatur ausgerichtet ist. */
+  margin-bottom: var(--drawer-keyboard-inset, 0px);
+}
+.footerRow { display: flex; gap: var(--space-3); }
+.footerRow > * { flex: 1; }
+
+/* ------------------------------------------------------------ Betrag --- */
+.amountField { display: grid; gap: var(--space-3); }
+.amountInput {
+  width: 100%;
+  border: none;
+  /* Gefuellt wie jedes andere Eingabefeld. Ohne Flaeche schwebt die Zahl
+     im Nichts und der Fokusring wirkt wie ein ploetzlich erscheinender
+     Rahmen statt wie eine Hervorhebung. */
+  background: var(--bg-subtle);
+  border-radius: var(--radius-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-7);
+  line-height: var(--line-height-7);
+  letter-spacing: var(--letter-spacing-7);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+.amountInput::placeholder { color: var(--text-secondary); opacity: 0.45; }
+
+/* --------------------------------------------------------- Kategorien --- */
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  gap: var(--space-3);
+}
+/* Kacheln statt Auswahlliste: ein Tipp statt oeffnen, scrollen, waehlen. */
+.categoryTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 4.25rem;
+  padding: var(--space-3);
+  border-radius: var(--radius-3);
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+  text-align: center;
+  transition: background-color var(--duration-fast) var(--easing-standard),
+              border-color var(--duration-fast) var(--easing-standard);
+}
+.categoryTile:hover { background: var(--bg-hover); }
+.categoryTileSelected {
+  background: var(--cat-bg);
+  color: var(--cat-text);
+  font-weight: var(--font-weight-medium);
+}
+.categoryTileLabel {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------- Datum --- */
+.dateRow { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.dateInput { flex: 1; min-width: 9rem; }
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--space-5);
+}
+
+.preview {
+  padding: var(--space-4);
+  border-radius: var(--radius-3);
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+}
+
+.noteToggle {
+  font-size: var(--font-size-3);
+  color: var(--accent-text);
+  min-height: var(--tap-target-min);
+  text-align: left;
+}
+
+.deleteRow { display: flex; justify-content: center; padding-top: var(--space-3); }
