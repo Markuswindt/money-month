@@ -47,7 +47,7 @@ export function CategoryRanking({
             onClick={() => onSelect(row.categoryId)}
           >
             <span className="catBadge">
-              <CategoryIcon name={category?.icon ?? 'Tag'} size={16} />
+              <CategoryIcon name={category?.icon ?? 'Tag'} size={20} />
             </span>
             <span className={c.rankLabel}>{category?.name ?? 'Unbekannt'}</span>
             <span>

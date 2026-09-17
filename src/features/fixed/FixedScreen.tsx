@@ -82,7 +82,7 @@ export function FixedScreen() {
                 onClick={() => edit(fixed)}
               >
                 <span className="catBadge">
-                  <CategoryIcon name={category?.icon ?? 'Tag'} size={16} />
+                  <CategoryIcon name={category?.icon ?? 'Tag'} size={20} />
                 </span>
                 <span className="listRow__body">
                   <span className="listRow__title">{fixed.note || category?.name || 'Fixkosten'}</span>

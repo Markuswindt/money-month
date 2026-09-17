@@ -30,7 +30,7 @@ export function ExpenseRow({
       onClick={() => edit(expense)}
     >
       <span className="catBadge">
-        <CategoryIcon name={category?.icon ?? 'Tag'} size={16} />
+        <CategoryIcon name={category?.icon ?? 'Tag'} size={20} />
       </span>
       <span className="listRow__body">
         <span className="listRow__title">{category?.name ?? 'Ohne Kategorie'}</span>

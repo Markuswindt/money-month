@@ -68,7 +68,7 @@ export function CategoriesScreen() {
           {active.map((category) => (
             <div key={category.id} className={s.row} style={categoryColorVars(category.color)}>
               <span className="catBadge">
-                <CategoryIcon name={category.icon} size={16} />
+                <CategoryIcon name={category.icon} size={20} />
               </span>
               <button
                 type="button"
