@@ -1,10 +1,13 @@
-import { useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { addDays } from 'date-fns';
 import { Money } from '@/components/ui/Money';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { categoryColorVars } from '@/lib/categoryColor';
-import { formatDayLabel, fromIsoDate, toIsoDate, todayIso } from '@/lib/periods';
+import {
+  formatDayLabel, formatDayOfMonth, formatMonthHeading, formatWeekdayAbbrev,
+  fromIsoDate, toIsoDate, todayIso,
+} from '@/lib/periods';
 import { dueDatesBetween, monthlyCents, nextDueDate } from '@/lib/recurrence';
 import { INTERVAL_LABELS } from '@/data/schema';
 import { useCategoryMap } from '@/store/selectors';
@@ -118,29 +121,41 @@ export function FixedScreen() {
           <h2 className="sectionTitle">Nächste Abbuchungen · 30 Tage</h2>
           <div className="card">
             <div className={s.timeline}>
-              {timeline.map(({ date, items }) => (
-                <div key={date} className={s.timelineDay} data-today={date === today ? '' : undefined}>
-                  <span className={s.timelineDot} />
-                  <div className={s.timelineDayBody}>
-                    <span className={s.timelineDate}>{formatDayLabel(date)}</span>
-                    {items.map((fixed) => {
-                      const category = categories.get(fixed.categoryId);
-                      return (
-                        <div key={fixed.id} className={s.timelineEntry}>
-                          <span
-                            className={s.timelineEntryDot}
-                            style={categoryColorVars(category?.color ?? 'cyan')}
-                          />
-                          <span className={s.timelineEntryName}>
-                            {fixed.note || category?.name || 'Fixkosten'}
-                          </span>
-                          <Money cents={fixed.amountCents} className={s.timelineEntryAmount} />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
+              {timeline.map(({ date, items }, i) => {
+                const isToday = date === today;
+                const isLastDay = i === timeline.length - 1;
+                const showMonth = i === 0 || timeline[i - 1]!.date.slice(0, 7) !== date.slice(0, 7);
+                return (
+                  <Fragment key={date}>
+                    {showMonth && <h3 className={s.timelineMonth}>{formatMonthHeading(date)}</h3>}
+                    <div className={s.timelineDay} data-today={isToday || undefined} data-last={isLastDay || undefined}>
+                      <div className={s.timelineStep}>
+                        <span className={s.timelineWeekday}>
+                          {isToday ? 'Heute' : formatWeekdayAbbrev(date)}
+                        </span>
+                        <span className={s.timelineDayNumber}>{formatDayOfMonth(date)}</span>
+                      </div>
+                      <div className={s.timelineDayBody}>
+                        {items.map((fixed) => {
+                          const category = categories.get(fixed.categoryId);
+                          return (
+                            <div key={fixed.id} className={s.timelineEntry}>
+                              <span
+                                className={s.timelineEntryDot}
+                                style={categoryColorVars(category?.color ?? 'cyan')}
+                              />
+                              <span className={s.timelineEntryName}>
+                                {fixed.note || category?.name || 'Fixkosten'}
+                              </span>
+                              <Money cents={fixed.amountCents} className={s.timelineEntryAmount} />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </Fragment>
+                );
+              })}
             </div>
           </div>
         </section>

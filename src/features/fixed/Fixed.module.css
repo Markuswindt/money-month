@@ -28,8 +28,8 @@
 }
 
 /* ---------------------------------------------------------- Zeitleiste --- */
-/* Ein Punkt pro TAG auf der Spindel, darunter kompakt alle Fixkosten, die
-   an diesem Tag abgebucht werden - nicht ein Punkt pro Fixkosten-Eintrag.
+/* Ein Marker pro TAG auf der Spindel, darunter kompakt alle Fixkosten, die
+   an diesem Tag abgebucht werden - nicht ein Marker pro Fixkosten-Eintrag.
    Das beantwortet "wann geht das naechste Geld raus" auf einen Blick,
    statt eine reine chronologische Liste zu wiederholen, die es als
    "Laufend"-Karte oben schon gibt. */
@@ -39,51 +39,85 @@
   gap: var(--space-6);
 }
 
+.timelineMonth {
+  font-size: var(--font-size-3);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  margin-top: var(--space-3);
+}
+.timelineMonth:first-child { margin-top: 0; }
+
 .timelineDay {
   position: relative;
   display: flex;
+  align-items: flex-start;
   gap: var(--space-4);
 }
 
 /* Verbindungslinie: haengt an jedem Tag ausser dem letzten, reicht durch
-   die Luecke (space-6) bis zum naechsten Punkt durch. Ueber calc() bleibt
-   sie an den Abstand gekoppelt, statt bei einer Aenderung von .timeline
-   gap manuell nachgezogen werden zu muessen. */
-.timelineDay:not(:last-child)::before {
+   die Luecke (space-6) bis zum naechsten Marker durch. Der Start-Versatz
+   (3.5rem) ist die Hoehe des Markers darueber - Wochentag-Zeile
+   (line-height-2) + Abstand (space-2) + Kreis (2.25rem) - damit die Linie
+   erst UNTER dem Kreis beginnt, statt ihn zu durchqueren. data-last statt
+   :last-child, weil zwischen den Tagen Monatsueberschriften als Geschwister
+   im DOM stehen koennen. */
+.timelineDay:not([data-last])::before {
   content: '';
   position: absolute;
-  left: 5px;
-  top: 16px;
+  left: 19px;
+  top: 3.5rem;
   bottom: calc(-1 * var(--space-6));
   width: 2px;
   background: var(--border-subtle);
 }
 
-.timelineDot {
+.timelineStep {
   flex: none;
-  width: 12px;
-  height: 12px;
-  margin-top: 4px;
-  border-radius: var(--radius-full);
-  background: var(--chart-magnitude);
+  width: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
 }
-/* Heute sticht farblich hervor, statt eigens beschriftet zu werden - "Heute"
-   steht ohnehin schon im Datumslabel (formatDayLabel). */
-.timelineDay[data-today] .timelineDot { background: var(--accent-text); }
-.timelineDay[data-today] .timelineDate { color: var(--accent-text); }
+
+.timelineWeekday {
+  font-size: var(--font-size-2);
+  line-height: var(--line-height-2);
+  color: var(--text-secondary);
+}
+
+.timelineDayNumber {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-full);
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+  font-size: var(--font-size-3);
+  font-weight: var(--font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Heute hebt sich farblich ab, statt eigens beschriftet zu werden - "Heute"
+   ersetzt in JS bereits den Wochentag ueber dem Kreis. Getoente Flaeche +
+   Akzenttext statt voller Fuellung, dieselbe Sprache wie ausgewaehlte
+   Chips und Kategorie-Badges im Rest der App. */
+.timelineDay[data-today] .timelineWeekday { color: var(--accent-text); font-weight: var(--font-weight-medium); }
+.timelineDay[data-today] .timelineDayNumber { background: var(--accent-bg); color: var(--accent-text); }
 
 .timelineDayBody {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: var(--space-2);
-}
-
-.timelineDate {
-  font-size: var(--font-size-3);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-primary);
+  min-height: 2.25rem;
+  /* Wochentag-Zeile + Abstand aus .timelineStep (line-height-2 + space-2) -
+     ohne den Versatz haengen die Eintraege oben am Wochentag statt auf
+     Hoehe des Kreises daneben. */
+  padding-top: 1.25rem;
 }
 
 .timelineEntry {

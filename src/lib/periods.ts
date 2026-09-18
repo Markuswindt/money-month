@@ -179,3 +179,20 @@ export function formatDayLabel(iso: string, today: string = todayIso()): string 
 export function formatFullDate(iso: string): string {
   return format(fromIsoDate(iso), 'd. MMMM yyyy', { locale: de });
 }
+
+/** Wochentag abgekuerzt mit Punkt, fuer den Tages-Marker der Fixkosten-
+ *  Zeitleiste: "Mo.", "So." - bewusst eigenes Format statt formatDayLabel(),
+ *  das Wochentag und Tag in einem String mischt ("Mi, 17. Sep."). */
+export function formatWeekdayAbbrev(iso: string): string {
+  return `${format(fromIsoDate(iso), 'EEEEEE', { locale: de })}.`;
+}
+
+/** Tag im Monat als reine Zahl, fuer den Kreis im Zeitleisten-Marker. */
+export function formatDayOfMonth(iso: string): string {
+  return format(fromIsoDate(iso), 'd', { locale: de });
+}
+
+/** Monatsueberschrift in der Fixkosten-Zeitleiste: "September 2026". */
+export function formatMonthHeading(iso: string): string {
+  return format(fromIsoDate(iso), 'MMMM yyyy', { locale: de });
+}
