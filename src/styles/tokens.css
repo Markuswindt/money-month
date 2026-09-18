@@ -110,7 +110,7 @@
   --control-height-sm: 1.75rem;       /* 28px                                */
   --control-height-md: 2.25rem;       /* 36px                                */
   --control-height-lg: 2.75rem;       /* 44px - Hauptaktion                  */
-  --tab-bar-height: 3rem;             /* 48px, plus Safe Area                */
+  --tab-bar-height: 4.25rem;          /* 68px - Hoehe der schwebenden Navi-Pillen */
   --content-max-width: 40rem;         /* 640px                               */
   --dashboard-max-width: 70rem;       /* 1120px                              */
 

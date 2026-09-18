@@ -71,6 +71,14 @@
   --cta-text: #eeeeec;      /* sand-12 aus dem Dunkelmodus */
   --cta-bg-hover: #2a2a28;  /* sand-4  aus dem Dunkelmodus */
 
+  /* Der Erfassen-Knopf in der schwebenden Navi-Pille bleibt IMMER
+     schwarz - anders als die uebrige Hauptaktion kehrt er sich im
+     Dunkelmodus nicht um. Deshalb ein eigenes, konstantes Token statt
+     --cta-bg: dieses hier hat absichtlich keinen Override unter .dark. */
+  --fab-bg: #111110;
+  --fab-text: #eeeeec;
+  --fab-bg-hover: #2a2a28;
+
   /* --- Fokus ----------------------------------------------------------
      Eigenes Token, weil der Ring auf JEDER Flaeche sichtbar bleiben muss -
      auch auf der inversen Hauptaktion. */
