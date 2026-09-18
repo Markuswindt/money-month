@@ -27,23 +27,90 @@
   color: var(--text-secondary);
 }
 
-.timeline { display: grid; }
-.timelineRow {
+/* ---------------------------------------------------------- Zeitleiste --- */
+/* Ein Punkt pro TAG auf der Spindel, darunter kompakt alle Fixkosten, die
+   an diesem Tag abgebucht werden - nicht ein Punkt pro Fixkosten-Eintrag.
+   Das beantwortet "wann geht das naechste Geld raus" auf einen Blick,
+   statt eine reine chronologische Liste zu wiederholen, die es als
+   "Laufend"-Karte oben schon gibt. */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.timelineDay {
+  position: relative;
+  display: flex;
+  gap: var(--space-4);
+}
+
+/* Verbindungslinie: haengt an jedem Tag ausser dem letzten, reicht durch
+   die Luecke (space-6) bis zum naechsten Punkt durch. Ueber calc() bleibt
+   sie an den Abstand gekoppelt, statt bei einer Aenderung von .timeline
+   gap manuell nachgezogen werden zu muessen. */
+.timelineDay:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 16px;
+  bottom: calc(-1 * var(--space-6));
+  width: 2px;
+  background: var(--border-subtle);
+}
+
+.timelineDot {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  margin-top: 4px;
+  border-radius: var(--radius-full);
+  background: var(--chart-magnitude);
+}
+/* Heute sticht farblich hervor, statt eigens beschriftet zu werden - "Heute"
+   steht ohnehin schon im Datumslabel (formatDayLabel). */
+.timelineDay[data-today] .timelineDot { background: var(--accent-text); }
+.timelineDay[data-today] .timelineDate { color: var(--accent-text); }
+
+.timelineDayBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.timelineDate {
+  font-size: var(--font-size-3);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-primary);
+}
+
+.timelineEntry {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  min-height: var(--list-row-min-height);
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--border-subtle);
+  gap: var(--space-3);
 }
-.timelineRow:last-child { border-bottom: none; }
-.timelineDate {
+.timelineEntryDot {
   flex: none;
-  width: 4.5rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background: var(--cat-fg);
+}
+.timelineEntryName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: var(--font-size-3);
   color: var(--text-secondary);
+}
+.timelineEntryAmount {
+  flex: none;
+  font-size: var(--font-size-3);
   font-variant-numeric: tabular-nums;
 }
-.timelineName { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .ended { opacity: 0.6; }

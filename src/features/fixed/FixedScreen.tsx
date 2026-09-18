@@ -34,13 +34,23 @@ export function FixedScreen() {
     };
   }, [fixedExpenses, today]);
 
-  /** Die naechsten 30 Tage, chronologisch - beantwortet "was geht demnächst ab". */
+  /** Die naechsten 30 Tage, nach Tag gruppiert - eine Zeile pro Faelligkeit,
+   *  aber nur EIN Punkt auf der Zeitleiste pro Tag, auch wenn mehrere
+   *  Fixkosten am selben Tag abgebucht werden. */
   const timeline = useMemo(() => {
     const until = toIsoDate(addDays(fromIsoDate(today), TIMELINE_DAYS));
     const entries = active.flatMap((f) =>
       dueDatesBetween(f, today, until).map((date) => ({ date, fixed: f })),
     );
-    return entries.sort((a, b) => a.date.localeCompare(b.date));
+    entries.sort((a, b) => a.date.localeCompare(b.date));
+
+    const byDate = new Map<string, typeof entries[number]['fixed'][]>();
+    for (const { date, fixed } of entries) {
+      const bucket = byDate.get(date);
+      if (bucket) bucket.push(fixed);
+      else byDate.set(date, [fixed]);
+    }
+    return Array.from(byDate, ([date, items]) => ({ date, items }));
   }, [active, today]);
 
   if (active.length === 0 && ended.length === 0) {
@@ -106,20 +116,31 @@ export function FixedScreen() {
       {timeline.length > 0 && (
         <section className={s.section}>
           <h2 className="sectionTitle">Nächste Abbuchungen · 30 Tage</h2>
-          <div className="card card--flush">
+          <div className="card">
             <div className={s.timeline}>
-              {timeline.map(({ date, fixed }) => {
-                const category = categories.get(fixed.categoryId);
-                return (
-                  <div key={`${fixed.id}-${date}`} className={s.timelineRow}>
+              {timeline.map(({ date, items }) => (
+                <div key={date} className={s.timelineDay} data-today={date === today ? '' : undefined}>
+                  <span className={s.timelineDot} />
+                  <div className={s.timelineDayBody}>
                     <span className={s.timelineDate}>{formatDayLabel(date)}</span>
-                    <span className={s.timelineName}>
-                      {fixed.note || category?.name || 'Fixkosten'}
-                    </span>
-                    <Money cents={fixed.amountCents} className="listRow__amount" />
+                    {items.map((fixed) => {
+                      const category = categories.get(fixed.categoryId);
+                      return (
+                        <div key={fixed.id} className={s.timelineEntry}>
+                          <span
+                            className={s.timelineEntryDot}
+                            style={categoryColorVars(category?.color ?? 'cyan')}
+                          />
+                          <span className={s.timelineEntryName}>
+                            {fixed.note || category?.name || 'Fixkosten'}
+                          </span>
+                          <Money cents={fixed.amountCents} className={s.timelineEntryAmount} />
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
+                </div>
+              ))}
             </div>
           </div>
         </section>
