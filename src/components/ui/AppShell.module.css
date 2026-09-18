@@ -91,7 +91,7 @@
 }
 
 /* ------------------------------------------------- Desktop: Sidebar --- */
-@media (min-width: 64rem) {
+@media (--desktop) {
   .shell { flex-direction: row; }
 
   .navRow {
@@ -156,7 +156,7 @@
   padding-inline: var(--space-4);
   margin-bottom: var(--space-6);
 }
-@media (min-width: 64rem) { .brand { display: block; } }
+@media (--desktop) { .brand { display: block; } }
 
 .fabLabel { display: none; }
-@media (min-width: 64rem) { .fabLabel { display: inline; font-size: var(--font-size-4); font-weight: var(--font-weight-medium); } }
+@media (--desktop) { .fabLabel { display: inline; font-size: var(--font-size-4); font-weight: var(--font-weight-medium); } }

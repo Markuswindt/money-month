@@ -130,7 +130,7 @@
 @media (min-width: 40rem) {
   :root { --screen-padding: var(--space-6); } /* 20px */
 }
-@media (min-width: 64rem) {
+@media (--desktop) {
   :root { --screen-padding: var(--space-8); } /* 32px */
 }
 

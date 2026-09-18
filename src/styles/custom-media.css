@@ -1,0 +1,11 @@
+/* =========================================================================
+   Zentrale Breakpoint-Definition.
+
+   CSS erlaubt keine Custom Properties (var()) innerhalb von @media-
+   Bedingungen - deshalb hier ueber postcss-custom-media statt als
+   normales Token in tokens.css. Diese Datei wird per "importFrom" in
+   postcss.config.js in jede verarbeitete CSS-Datei eingespeist, auch
+   ohne @import an der Verwendungsstelle.
+   ========================================================================= */
+
+@custom-media --desktop (min-width: 50rem);
