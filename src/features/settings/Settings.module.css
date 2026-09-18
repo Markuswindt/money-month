@@ -1,4 +1,8 @@
-.page { display: grid; gap: var(--space-7); }
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
+}
 .title {
   font-size: var(--font-size-5);
   line-height: var(--line-height-5);

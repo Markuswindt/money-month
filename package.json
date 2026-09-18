@@ -14,7 +14,8 @@
     "check:flow": "node scripts/flow-check.mjs",
     "check:offline": "node scripts/offline-check.mjs",
     "check:a11y": "node scripts/a11y-check.mjs",
-    "check:select": "node scripts/select-check.mjs"
+    "check:select": "node scripts/select-check.mjs",
+    "check:overflow": "node scripts/overflow-check.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

@@ -1,4 +1,14 @@
-.page { display: grid; gap: var(--space-5); }
+/* minmax(0, 1fr) statt der impliziten auto-Spalte: eine auto-Spalte darf
+   nicht unter die min-content-Breite ihres Inhalts schrumpfen. Weil
+   Listenzeilen ihren Text mit white-space: nowrap setzen, ist deren
+   min-content die VOLLE Textbreite - eine lange Notiz hat damit die ganze
+   Seite breiter gemacht und waagerechtes Scrollen ausgeloest, statt per
+   Ellipse abgeschnitten zu werden. Mit Minimum 0 greift das Abschneiden. */
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+}
 
 .search { position: relative; }
 .searchInput { padding-left: var(--space-10); }

@@ -1,4 +1,8 @@
-.page { display: grid; gap: var(--space-7); }
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-7);
+}
 
 .summary {
   background: var(--bg-surface);
@@ -118,7 +122,7 @@
   /* Wochentag-Zeile + Abstand aus .timelineStep (line-height-2 + space-2) -
      ohne den Versatz haengen die Eintraege oben am Wochentag statt auf
      Hoehe des Kreises daneben. */
-  padding-top: 1.25rem;
+  padding-top: 1.75rem;
 }
 
 .timelineEntry {
