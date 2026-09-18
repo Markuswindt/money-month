@@ -119,8 +119,7 @@ export function FixedScreen() {
       {timeline.length > 0 && (
         <section className={s.section}>
           <h2 className="sectionTitle">Nächste Abbuchungen · 30 Tage</h2>
-          <div className="card">
-            <div className={s.timeline}>
+          <div className={s.timeline}>
               {timeline.map(({ date, items }, i) => {
                 const isToday = date === today;
                 const isLastDay = i === timeline.length - 1;
@@ -156,7 +155,6 @@ export function FixedScreen() {
                   </Fragment>
                 );
               })}
-            </div>
           </div>
         </section>
       )}

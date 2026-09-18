@@ -83,7 +83,8 @@
 .timelineWeekday {
   font-size: var(--font-size-2);
   line-height: var(--line-height-2);
-  color: var(--text-secondary);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
 }
 
 .timelineDayNumber {
@@ -103,7 +104,7 @@
    ersetzt in JS bereits den Wochentag ueber dem Kreis. Getoente Flaeche +
    Akzenttext statt voller Fuellung, dieselbe Sprache wie ausgewaehlte
    Chips und Kategorie-Badges im Rest der App. */
-.timelineDay[data-today] .timelineWeekday { color: var(--accent-text); font-weight: var(--font-weight-medium); }
+.timelineDay[data-today] .timelineWeekday { color: var(--accent-text); }
 .timelineDay[data-today] .timelineDayNumber { background: var(--accent-bg); color: var(--accent-text); }
 
 .timelineDayBody {
