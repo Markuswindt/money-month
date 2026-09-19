@@ -40,8 +40,9 @@ export function ExpensesScreen() {
   }
 
   return (
-    <div className={s.page}>
-      <PeriodNav />
+    <div className={s.page} data-period-swipe>
+      {/* Ein Monat, in dem nur die Miete lief, waere hier eine leere Seite. */}
+      <PeriodNav includeFixed={false} />
 
       <div className={s.search}>
         <Search size={18} className={s.searchIcon} aria-hidden />

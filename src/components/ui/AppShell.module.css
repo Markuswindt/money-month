@@ -23,8 +23,8 @@
    Leiste mit einem eingelassenen Knopf. */
 .navRow {
   position: fixed;
-  left: var(--space-5);
-  right: var(--space-5);
+  left: var(--space-3);
+  right: var(--space-3);
   bottom: calc(env(safe-area-inset-bottom) + var(--space-4));
   z-index: 10;
   display: flex;
@@ -51,7 +51,6 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
-  padding-block: var(--space-4);
   font-size: var(--font-size-2);
   line-height: var(--line-height-2);
   color: var(--text-secondary);

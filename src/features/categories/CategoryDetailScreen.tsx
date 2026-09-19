@@ -64,7 +64,7 @@ export function CategoryDetailScreen() {
   }
 
   return (
-    <div className={s.page} style={categoryColorVars(category.color)}>
+    <div className={s.page} data-period-swipe style={categoryColorVars(category.color)}>
       <Link to="/" className={s.back}>
         <ChevronLeft size={18} aria-hidden />
         Übersicht

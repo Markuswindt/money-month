@@ -1,6 +1,9 @@
 import type { FixedExpense, VariableExpense } from '@/data/schema';
 import { amountInPeriod, isActiveInPeriod } from './recurrence';
-import { containsIso, lastPeriods, TREND_LENGTH, type Period } from './periods';
+import {
+  containsIso, fromIsoDate, lastPeriods, makePeriod, shiftPeriod, toIsoDate,
+  TREND_LENGTH, type Period, type PeriodType,
+} from './periods';
 
 export type ExpenseFilter = 'all' | 'variable' | 'fixed';
 
@@ -63,6 +66,78 @@ export function distributeRounding(parts: readonly number[], target: number): nu
   for (let k = byRemainder.length - 1; diff < 0 && k >= 0; k--, diff++) {
     const idx = byRemainder[k]?.i;
     if (idx !== undefined) out[idx] = (out[idx] ?? 0) - 1;
+  }
+  return out;
+}
+
+/** Notbremse gegen ein verrutschtes Datum im Import: ohne sie wuerde eine
+ *  Ausgabe mit Jahr 1015 rund 12.000 Monatskandidaten erzeugen. */
+const MAX_CANDIDATES = 2000;
+
+/**
+ * Perioden des Typs, in denen es ueberhaupt etwas zu sehen gibt.
+ *
+ * Grundlage des Auswahlstreifens. Ein fester Ruecklauf ueber 36 Monate
+ * zeigte dort Zeitraeume, in denen nie etwas erfasst wurde - man scrollte
+ * durch leere Monate, bevor die eigenen Daten anfingen.
+ *
+ * Was als "Daten" zaehlt, haengt vom Bildschirm ab und steckt in
+ * `includeFixed`:
+ *
+ * - Die Uebersicht rechnet Fixkosten in ihre Summen ein, also ist ein Monat
+ *   dort auch dann etwas wert, wenn nur die Miete lief.
+ * - Die Ausgabenliste zeigt einzeln Erfasstes. Ein Monat ohne eigene
+ *   Eintraege ist dort eine leere Seite, auch wenn die Miete abging - und
+ *   waere zudem von allen anderen solchen Monaten nicht zu unterscheiden.
+ *
+ * Ein Betrag von 0 zaehlt mit: entscheidend ist, ob etwas erfasst wurde,
+ * nicht wie viel es war.
+ *
+ * Luecken sind moeglich und gewollt: wer eine Woche lang nichts erfasst und
+ * keine Fixkosten hat, findet diese Woche nicht im Streifen.
+ *
+ * Immer enthalten sind die laufende Periode - sonst gaebe es nach dem
+ * Loeschen der letzten Ausgabe keinen Weg zurueck zu heute - und die in
+ * `ensure` uebergebene, damit die gerade gewaehlte Periode nicht unter den
+ * Fuessen verschwindet.
+ */
+export function periodsWithData(
+  dataset: Dataset,
+  type: PeriodType,
+  options: { today?: Date; ensure?: Period; includeFixed?: boolean } = {},
+): Period[] {
+  const today = options.today ?? new Date();
+  const includeFixed = options.includeFixed ?? true;
+  const current = makePeriod(type, today);
+
+  const live = dataset.variable.filter((e) => e.deletedAt === null);
+  const activeFixed = includeFixed ? dataset.fixed.filter((f) => f.deletedAt === null) : [];
+
+  // Fruehester Tag, ab dem es etwas geben KANN. Alles davor braucht gar
+  // nicht erst zum Kandidaten zu werden.
+  let earliest = toIsoDate(current.start);
+  for (const e of live) if (e.date < earliest) earliest = e.date;
+  for (const f of activeFixed) if (f.startDate < earliest) earliest = f.startDate;
+  if (options.ensure) {
+    const ensureStart = options.ensure.startIso;
+    if (ensureStart < earliest) earliest = ensureStart;
+  }
+
+  // In welche Periode faellt welche Ausgabe - einmal sammeln statt pro
+  // Kandidat erneut ueber alle Ausgaben zu laufen.
+  const hit = new Set<string>();
+  for (const e of live) hit.add(makePeriod(type, fromIsoDate(e.date)).key);
+
+  const out: Period[] = [];
+  let candidate = makePeriod(type, fromIsoDate(earliest));
+  for (let i = 0; i < MAX_CANDIDATES && candidate.startIso <= current.startIso; i++) {
+    const keep =
+      candidate.key === current.key ||
+      candidate.key === options.ensure?.key ||
+      hit.has(candidate.key) ||
+      activeFixed.some((f) => isActiveInPeriod(f, candidate));
+    if (keep) out.push(candidate);
+    candidate = shiftPeriod(candidate, 1);
   }
   return out;
 }

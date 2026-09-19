@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { Money } from '@/components/ui/Money';
 import { isCurrentPeriod, periodLabel, periodShortLabel } from '@/lib/periods';
 import type { TrendPoint } from '@/lib/aggregations';
@@ -36,7 +36,11 @@ export function TrendBars({ points }: { points: readonly TrendPoint[] }) {
             >
               <span
                 className={c.trendStack}
-                style={{ height: `${Math.max(height, 1.5)}%`, opacity: current || active === i ? 1 : 0.72 }}
+                style={{
+                  height: `${Math.max(height, 1.5)}%`,
+                  opacity: current || active === i ? 1 : 0.72,
+                  '--i': i,
+                } as CSSProperties}
               >
                 <span
                   className={c.trendSeg}

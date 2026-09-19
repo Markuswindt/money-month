@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useDataStore } from './dataStore';
-import type { Dataset } from '@/lib/aggregations';
+import { periodsWithData, type Dataset } from '@/lib/aggregations';
+import type { Period } from '@/lib/periods';
 import type { Category } from '@/data/schema';
 import { isActiveCategory } from '@/data/schema';
 
@@ -42,4 +43,32 @@ export function useRecentCategoryIds(limit = 4): string[] {
     }
     return seen;
   }, [variable, limit]);
+}
+
+/**
+ * Die auswaehlbaren Zeitraeume: nur solche, in denen etwas erfasst wurde.
+ *
+ * Streifen und Chevrons muessen sich dieselbe Liste teilen, sonst springt
+ * der Chevron in einen Monat, den der Streifen gar nicht anbietet.
+ *
+ * Die Basis haengt nur am Typ und behaelt damit ihre Referenz, solange die
+ * Auswahl darin vorkommt - der Normalfall. Beim Scrollen wechselt die
+ * Auswahl mehrmals pro Sekunde; ein jedes Mal neues Array wuerde React
+ * zwingen, alle Pillen neu aufzubauen, waehrend der Finger noch scrollt.
+ *
+ * `includeFixed` entscheidet, ob ein Zeitraum schon deshalb zaehlt, weil
+ * eine Fixkostenposition darin lief - siehe periodsWithData().
+ */
+export function usePeriodsWithData(selected: Period, includeFixed = true): Period[] {
+  const dataset = useDataset();
+  const base = useMemo(
+    () => periodsWithData(dataset, selected.type, { includeFixed }),
+    [dataset, selected.type, includeFixed],
+  );
+  return useMemo(
+    () => (base.some((p) => p.key === selected.key)
+      ? base
+      : periodsWithData(dataset, selected.type, { ensure: selected, includeFixed })),
+    [base, dataset, selected, includeFixed],
+  );
 }

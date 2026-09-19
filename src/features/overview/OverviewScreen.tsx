@@ -8,6 +8,7 @@ import { SplitBar } from '@/components/charts/SplitBar';
 import { CategoryRanking } from '@/components/charts/CategoryRanking';
 import { TrendBars } from '@/components/charts/TrendBars';
 import { ExpenseRow } from '@/features/expenses/ExpenseRow';
+import { useAnimatedNumber } from '@/hooks/useAnimatedNumber';
 import { useUiStore } from '@/store/uiStore';
 import { useCategoryMap, useDataset } from '@/store/selectors';
 import {
@@ -39,17 +40,21 @@ export function OverviewScreen() {
     [dataset, period],
   );
 
+  // Die Hero-Summe zaehlt auf den neuen Wert hoch. Nur sie: in den Listen
+  // und der Legende darunter waere dieselbe Bewegung blosse Unruhe.
+  const shownTotal = useAnimatedNumber(totals.totalCents);
+
   // In der Wochen- und Jahresansicht ist der Fixkostenanteil ein Durchschnitt,
   // kein tatsaechlich abgebuchter Betrag. Das muss dranstehen.
   const showAverageHint = period.type !== 'month';
 
   return (
-    <div className={s.page}>
+    <div className={s.page} data-period-swipe>
       <PeriodNav />
 
       <section className={s.hero}>
         <div className={s.heroTop}>
-          <Money cents={totals.totalCents} className={s.heroAmount} />
+          <Money cents={shownTotal} className={s.heroAmount} />
           <p className={s.heroMeta}>
             {delta ? (
               <span className={`${s.delta} ${delta.percent >= 0 ? s.deltaUp : s.deltaDown}`}>

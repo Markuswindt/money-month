@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   categoryRanking, deltaToPrevious, distributeRounding, groupByDay,
-  periodTotals, trendSeries, type Dataset,
+  periodsWithData, periodTotals, trendSeries, type Dataset,
 } from './aggregations';
 import { makePeriod } from './periods';
 import { fixed, variable } from './testFixtures';
@@ -150,5 +150,101 @@ describe('groupByDay', () => {
     expect(groups.map((g) => g.date)).toEqual(['2026-09-11', '2026-09-03']);
     expect(groups[0]?.totalCents).toBe(2040);
     expect(groups[0]?.items).toHaveLength(2);
+  });
+});
+
+describe('periodsWithData', () => {
+  const heute = new Date(2026, 8, 17); // 17.09.2026
+
+  it('nimmt nur Monate mit Ausgaben und lässt Lücken stehen', () => {
+    const ds = {
+      variable: [
+        variable({ date: '2026-06-04', amountCents: 1000 }),
+        variable({ date: '2026-08-11', amountCents: 2000 }),
+      ],
+      fixed: [],
+    };
+    const keys = periodsWithData(ds, 'month', { today: heute }).map((p) => p.startIso);
+    // Juli fehlt bewusst - dort wurde nichts erfasst.
+    expect(keys).toEqual(['2026-06-01', '2026-08-01', '2026-09-01']);
+  });
+
+  it('füllt jeden Monat, in dem eine Fixkostenposition läuft', () => {
+    const ds = {
+      variable: [],
+      fixed: [fixed({ amountCents: 95_000, interval: 'monthly', startDate: '2026-07-01' })],
+    };
+    const keys = periodsWithData(ds, 'month', { today: heute }).map((p) => p.startIso);
+    expect(keys).toEqual(['2026-07-01', '2026-08-01', '2026-09-01']);
+  });
+
+  it('hört auf, wo die Fixkostenposition beendet wurde', () => {
+    const ds = {
+      variable: [],
+      fixed: [fixed({
+        amountCents: 1000, interval: 'monthly',
+        startDate: '2026-05-01', endDate: '2026-06-30',
+      })],
+    };
+    const keys = periodsWithData(ds, 'month', { today: heute }).map((p) => p.startIso);
+    // September ist trotzdem dabei: die laufende Periode ist immer wählbar.
+    expect(keys).toEqual(['2026-05-01', '2026-06-01', '2026-09-01']);
+  });
+
+  it('enthält ohne jede Ausgabe genau die laufende Periode', () => {
+    const keys = periodsWithData({ variable: [], fixed: [] }, 'month', { today: heute });
+    expect(keys.map((p) => p.startIso)).toEqual(['2026-09-01']);
+  });
+
+  it('übergeht gelöschte Ausgaben und gelöschte Fixkosten', () => {
+    const ds = {
+      variable: [variable({ date: '2026-06-04', amountCents: 1000, deletedAt: '2026-06-05T00:00:00.000Z' })],
+      fixed: [fixed({ amountCents: 1000, interval: 'monthly', startDate: '2026-01-01', deletedAt: '2026-02-01T00:00:00.000Z' })],
+    };
+    expect(periodsWithData(ds, 'month', { today: heute }).map((p) => p.startIso))
+      .toEqual(['2026-09-01']);
+  });
+
+  it('behält die gewählte Periode, auch wenn sie leer ist', () => {
+    const ds = { variable: [variable({ date: '2026-08-11', amountCents: 2000 })], fixed: [] };
+    const leer = makePeriod('month', new Date(2026, 3, 1)); // April
+    const keys = periodsWithData(ds, 'month', { today: heute, ensure: leer }).map((p) => p.startIso);
+    expect(keys).toEqual(['2026-04-01', '2026-08-01', '2026-09-01']);
+  });
+
+  it('endet immer bei der laufenden Periode, nie in der Zukunft', () => {
+    const ds = { variable: [variable({ date: '2027-03-01', amountCents: 500 })], fixed: [] };
+    const keys = periodsWithData(ds, 'month', { today: heute }).map((p) => p.startIso);
+    expect(keys.at(-1)).toBe('2026-09-01');
+    expect(keys.some((k) => k > '2026-09-01')).toBe(false);
+  });
+
+  it('rechnet genauso für Wochen und Jahre', () => {
+    const ds = { variable: [variable({ date: '2026-09-02', amountCents: 100 })], fixed: [] };
+    // 2.9.2026 ist ein Mittwoch -> KW 36 beginnt am 31.08.
+    expect(periodsWithData(ds, 'week', { today: heute }).map((p) => p.startIso))
+      .toEqual(['2026-08-31', '2026-09-14']);
+    expect(periodsWithData(ds, 'year', { today: heute }).map((p) => p.startIso))
+      .toEqual(['2026-01-01']);
+  });
+});
+
+describe('periodsWithData ohne Fixkosten', () => {
+  const heute = new Date(2026, 8, 17);
+
+  it('ignoriert laufende Fixkosten, wenn nur Erfasstes zählen soll', () => {
+    const ds = {
+      variable: [variable({ date: '2026-08-11', amountCents: 2000 })],
+      fixed: [fixed({ amountCents: 95_000, interval: 'monthly', startDate: '2023-01-01' })],
+    };
+    expect(periodsWithData(ds, 'month', { today: heute }).length).toBeGreaterThan(40);
+    expect(periodsWithData(ds, 'month', { today: heute, includeFixed: false })
+      .map((p) => p.startIso)).toEqual(['2026-08-01', '2026-09-01']);
+  });
+
+  it('behält auch ohne Fixkosten die laufende Periode', () => {
+    const ds = { variable: [], fixed: [fixed({ amountCents: 100, interval: 'monthly', startDate: '2023-01-01' })] };
+    expect(periodsWithData(ds, 'month', { today: heute, includeFixed: false })
+      .map((p) => p.startIso)).toEqual(['2026-09-01']);
   });
 });

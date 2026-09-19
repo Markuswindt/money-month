@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   containsIso, formatDayLabel, lastPeriods, makePeriod, periodLabel,
-  shiftPeriod, toIsoDate,
+  periodStripLabel, shiftPeriod, toIsoDate,
 } from './periods';
 
 const at = (y: number, m: number, d: number) => new Date(y, m - 1, d);
@@ -88,5 +88,34 @@ describe('Beschriftungen', () => {
 
   it('kommt beim Monatswechsel mit Gestern klar', () => {
     expect(formatDayLabel('2026-08-31', '2026-09-01')).toBe('Gestern');
+  });
+});
+
+describe('Auswahlstreifen', () => {
+
+
+
+  it('beschriftet Monate mit Kurzname und Jahr', () => {
+    expect(periodStripLabel(makePeriod('month', at(2026, 9, 17))))
+      // date-fns kuerzt deutsche Monatsnamen mit Punkt ab - dieselbe
+      // Schreibweise wie auf der Achse des Verlaufs-Charts.
+      .toEqual({ primary: 'Sep.', secondary: '2026' });
+  });
+
+  it('beschriftet Wochen mit KW und Datumsspanne', () => {
+    // KW 38 laeuft vom 14. bis 20. September.
+    expect(periodStripLabel(makePeriod('week', at(2026, 9, 17))))
+      .toEqual({ primary: 'KW 38', secondary: '14.–20.9.' });
+  });
+
+  it('spannt die Wochenbeschriftung ueber den Monatswechsel', () => {
+    // 30.09.2026 ist ein Mittwoch: die Woche laeuft vom 28.9. bis 4.10.
+    expect(periodStripLabel(makePeriod('week', at(2026, 9, 30))).secondary)
+      .toBe('28.–4.10.');
+  });
+
+  it('laesst die Unterzeile beim Jahr leer', () => {
+    expect(periodStripLabel(makePeriod('year', at(2026, 9, 17))))
+      .toEqual({ primary: '2026', secondary: '' });
   });
 });

@@ -115,7 +115,7 @@
 .footerRow > * { flex: 1; }
 
 /* ------------------------------------------------------------ Betrag --- */
-.amountField { display: grid; gap: var(--space-3); }
+.amountField { display: grid; }
 .amountInput {
   width: 100%;
   border: none;
@@ -188,13 +188,6 @@
   color: var(--accent-text);
   font-size: var(--font-size-3);
   line-height: var(--line-height-3);
-}
-
-.noteToggle {
-  font-size: var(--font-size-3);
-  color: var(--accent-text);
-  min-height: var(--tap-target-min);
-  text-align: left;
 }
 
 .deleteRow { display: flex; justify-content: center; padding-top: var(--space-3); }

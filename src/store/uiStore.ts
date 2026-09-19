@@ -21,6 +21,7 @@ type UiState = {
   period: Period;
   filter: ExpenseFilter;
   setPeriodType: (type: PeriodType) => void;
+  setPeriod: (period: Period) => void;
   step: (delta: number) => void;
   goToToday: () => void;
   setFilter: (filter: ExpenseFilter) => void;
@@ -40,6 +41,12 @@ export const useUiStore = create<UiState>((set, get) => ({
       /* ignorieren */
     }
     set({ period: changePeriodType(get().period, type) });
+  },
+
+  // Der Auswahlstreifen springt nicht schrittweise, sondern direkt auf eine
+  // Periode - step(delta) waere dort eine Umrechnung ohne Nutzen.
+  setPeriod(period) {
+    set({ period });
   },
 
   step(delta) {

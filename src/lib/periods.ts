@@ -140,6 +140,27 @@ export function periodShortLabel(period: Period): string {
   }
 }
 
+/** Zweizeilige Beschriftung fuer einen Eintrag im Auswahlstreifen.
+ *
+ *  Die Eintraege sind alle gleich breit, damit das Einrasten gleichmaessig
+ *  wirkt - deshalb die kurze Oberzeile und der Kontext (Jahr bzw. Datums-
+ *  spanne) darunter, statt eines langen Labels, das die Breite sprengt.
+ *  Beim Jahr traegt die Oberzeile bereits alles, die Unterzeile bleibt leer. */
+export function periodStripLabel(period: Period): { primary: string; secondary: string } {
+  const primary = periodShortLabel(period);
+  switch (period.type) {
+    case 'week': {
+      const from = format(period.start, 'd.', { locale: de });
+      const to = format(period.end, 'd.M.', { locale: de });
+      return { primary, secondary: `${from}–${to}` };
+    }
+    case 'month':
+      return { primary, secondary: format(period.start, 'yyyy', { locale: de }) };
+    case 'year':
+      return { primary, secondary: '' };
+  }
+}
+
 /** Name der Vorperiode fuer den Vergleichssatz ("+12 % ggü. August"). */
 export function previousPeriodLabel(period: Period): string {
   const prev = shiftPeriod(period, -1);

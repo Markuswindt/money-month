@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { Money } from '@/components/ui/Money';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
 import { categoryColorVars } from '@/lib/categoryColor';
@@ -35,7 +35,7 @@ export function CategoryRanking({
 
   return (
     <div className={c.ranking}>
-      {visible.map((row) => {
+      {visible.map((row, i) => {
         const category = categories.get(row.categoryId);
         const width = max > 0 ? Math.max(1.5, (row.cents / max) * 100) : 0;
         return (
@@ -56,7 +56,10 @@ export function CategoryRanking({
             </span>
             <span className={c.rankBarCell}>
               <span className={c.rankBar}>
-                <span className={c.rankFill} style={{ width: `${width}%` }} />
+                <span
+                  className={c.rankFill}
+                  style={{ width: `${width}%`, '--i': i } as CSSProperties}
+                />
               </span>
             </span>
           </button>

@@ -108,6 +108,9 @@
   border-radius: var(--radius-1);
   background: var(--chart-magnitude);
   transition: width var(--duration-slow) var(--easing-standard);
+  transform-origin: left center;
+  animation: growX var(--duration-slow) var(--easing-standard) backwards;
+  animation-delay: calc(var(--i, 0) * 25ms);
 }
 
 .moreButton {
@@ -153,6 +156,9 @@
   gap: 2px;
   width: 100%;
   transition: height var(--duration-slow) var(--easing-standard);
+  transform-origin: bottom center;
+  animation: growY var(--duration-slow) var(--easing-standard) backwards;
+  animation-delay: calc(var(--i, 0) * 25ms);
 }
 .trendSeg { width: 100%; }
 /* Radius nur am Datenende oben, nie an der Grundlinie - ein unten
@@ -206,3 +212,21 @@
   padding-top: var(--space-2);
   font-weight: var(--font-weight-medium);
 }
+
+/* ------------------------------------------------------- Einblenden --- */
+/* Neu in den DOM kommende Balken wachsen aus der Grundlinie heraus, statt
+   in Endgroesse aufzuploppen.
+ 
+   Warum transform und nicht width/height: auf genau diesen beiden
+   Eigenschaften liegen oben schon Transitions fuer den Wertwechsel. Eine
+   Animation auf derselben Eigenschaft wuerde sie fuer ihre Laufzeit
+   uebersteuern und danach sichtbar zurueckspringen.
+ 
+   Beim Verlaufs-Chart laeuft das bei JEDEM Periodenwechsel, weil dort der
+   React-Key die Periode ist und damit alle Balken neu aufgebaut werden.
+   Die Staffelung ueber --i macht daraus eine Welle statt eines Blitzes.
+ 
+   Der Preis: scaleX auf einem Balken mit 4-px-Enden verzerrt die Rundung
+   fuer die Dauer der Animation. Bei 240 ms ist das nicht zu sehen. */
+@keyframes growX { from { transform: scaleX(0); } }
+@keyframes growY { from { transform: scaleY(0); } }

@@ -4,26 +4,89 @@
 .nav {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  /* Der Streifen darf die Zeile nicht aufblaehen - dieselbe Falle wie bei
+     den Seiten-Grids: eine auto-Spur schrumpft nicht unter ihren Inhalt. */
+  min-width: 0;
 }
-.label {
+
+/* Die Chevrons sind nur auf dem Desktop da. Auf dem Touchgeraet wischt man,
+   und zwei 44px-Knoepfe wuerden dem Streifen die halbe Breite nehmen. */
+.navArrow { display: none; flex: none; }
+@media (--desktop) {
+  .navArrow { display: grid; }
+}
+
+/* ----------------------------------------------------- Auswahlstreifen --- */
+.strip {
+  --strip-item: 4.5rem;
+
+  /* Nicht kosmetisch: offsetLeft misst gegen den offsetParent. Ohne das
+     hier waere das ein Vorfahre und jeder Eintrag laege um dessen Versatz
+     (das Seiten-Padding) daneben - das Zentrieren traefe konstant 12,5 px
+     zu weit rechts und nur die Snap-Korrektur haette es kaschiert. */
+  position: relative;
   flex: 1;
-  text-align: center;
-  font-size: var(--font-size-5);
-  line-height: var(--line-height-5);
-  letter-spacing: var(--letter-spacing-5);
-  font-weight: var(--font-weight-semibold);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.today {
-  position: absolute;
-  right: var(--screen-padding);
-}
-.navWrap { position: relative; }
-.todayRow {
+  min-width: 0;
   display: flex;
-  justify-content: center;
-  min-height: var(--control-height-sm);
+  gap: var(--space-2);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  /* Beide Enden weich auslaufen lassen, damit der Streifen nicht wie
+     abgeschnitten wirkt, sondern wie fortlaufend. */
+  mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
 }
+.strip::-webkit-scrollbar { display: none; }
+
+/* Fuellstuecke, damit auch der erste und der letzte Eintrag in die Mitte
+   scrollen koennen. Prozent bezieht sich hier auf die Containerbreite. */
+.strip::before,
+.strip::after {
+  content: '';
+  flex: 0 0 calc(50% - var(--strip-item) / 2);
+}
+
+.stripItem {
+  flex: 0 0 var(--strip-item);
+  scroll-snap-align: center;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: var(--space-0);
+  min-height: var(--control-height-lg);
+  padding-block: var(--space-3);
+  border-radius: var(--radius-4);
+  color: var(--text-secondary);
+  transition:
+    background-color var(--duration-fast) var(--easing-standard),
+    color var(--duration-fast) var(--easing-standard),
+    transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.stripPrimary {
+  font-size: var(--font-size-3);
+  line-height: var(--line-height-3);
+  font-weight: var(--font-weight-semibold);
+}
+.stripSecondary {
+  font-size: var(--font-size-2);
+  line-height: var(--line-height-2);
+  color: var(--text-secondary);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Die gewaehlte Periode traegt dieselbe Akzentflaeche wie ein ausgewaehlter
+   Chip - und wird zusaetzlich groesser, damit die Mitte auch dann erkennbar
+   bleibt, wenn die Randmaske die Nachbarn schon aufhellt. */
+.stripItem[data-pressed] {
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  transform: scale(1.06);
+}
+
+/* Kein opacity zum Abtoenen: gold-11 auf gold-3 liegt bei 4,8:1 und
+   faellt schon bei 0,75 Deckkraft unter die 4,5:1 fuer Fliesstext.
+   Die Unterordnung traegt hier die Schriftgroesse, nicht die Farbe. */
+.stripItem[data-pressed] .stripSecondary { color: inherit; }

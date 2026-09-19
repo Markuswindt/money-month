@@ -3,6 +3,7 @@ import { Drawer } from '@base-ui/react/drawer';
 import { NumberField } from '@base-ui/react/number-field';
 import { Trash2, X } from 'lucide-react';
 import { CategoryIcon } from '@/components/ui/CategoryIcon';
+import { DatePicker } from '@/components/ui/DatePicker';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Select, type SelectOption } from '@/components/ui/Select';
 import { categoryColorVars } from '@/lib/categoryColor';
@@ -70,7 +71,6 @@ export function EntrySheet() {
   const [categoryId, setCategoryId] = useState<string>('');
   const [date, setDate] = useState(todayIso());
   const [note, setNote] = useState('');
-  const [noteVisible, setNoteVisible] = useState(false);
   const [interval, setIntervalValue] = useState<RecurrenceInterval>('monthly');
   const [dueDay, setDueDay] = useState(1);
   const [startDate, setStartDate] = useState(startOfCurrentMonthIso());
@@ -86,7 +86,6 @@ export function EntrySheet() {
       setCategoryId(editingVariable.categoryId);
       setDate(editingVariable.date);
       setNote(editingVariable.note);
-      setNoteVisible(editingVariable.note !== '');
     } else if (editingFixed) {
       setMode('fixed');
       setEuros(editingFixed.amountCents / 100);
@@ -95,7 +94,6 @@ export function EntrySheet() {
       setDueDay(editingFixed.dueDay);
       setStartDate(editingFixed.startDate);
       setNote(editingFixed.note);
-      setNoteVisible(editingFixed.note !== '');
     } else {
       setMode(storeMode);
       setEuros(null);
@@ -105,7 +103,6 @@ export function EntrySheet() {
       setDueDay(1);
       setStartDate(startOfCurrentMonthIso());
       setNote('');
-      setNoteVisible(false);
     }
     // Nur beim Oeffnen neu befuellen - sonst wuerde jede Eingabe zurueckgesetzt.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -143,7 +140,6 @@ export function EntrySheet() {
   function reset() {
     setEuros(null);
     setNote('');
-    setNoteVisible(false);
     setTouched(false);
   }
 
@@ -252,29 +248,6 @@ export function EntrySheet() {
                     <p className="fieldError">Bitte einen Betrag größer als 0 eingeben.</p>
                   )}
 
-                  <div>
-                    <span className="fieldLabel">Kategorie</span>
-                    <div className={s.categoryGrid} role="radiogroup" aria-label="Kategorie">
-                      {orderedCategories.map((category) => {
-                        const selected = category.id === categoryId;
-                        return (
-                          <button
-                            key={category.id}
-                            type="button"
-                            role="radio"
-                            aria-checked={selected}
-                            className={`${s.categoryTile} ${selected ? s.categoryTileSelected : ''}`}
-                            style={categoryColorVars(category.color)}
-                            onClick={() => setCategoryId(category.id)}
-                          >
-                            <CategoryIcon name={category.icon} size={20} />
-                            <span className={s.categoryTileLabel}>{category.name}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
                   {mode === 'variable' ? (
                     <div>
                       <span className="fieldLabel">Datum</span>
@@ -295,17 +268,14 @@ export function EntrySheet() {
                         >
                           Gestern
                         </button>
-                        {/* Natives Datumsfeld: auf iOS ist das der eingebaute
-                            Datums-Wheel - besser als jeder Nachbau, 0 kB und
-                            korrekt lokalisiert. */}
-                        <input
-                          type="date"
-                          className={`input ${s.dateInput}`}
-                          value={date}
-                          max={todayIso()}
-                          onChange={(e) => setDate(e.target.value)}
-                          aria-label="Datum"
-                        />
+                        <span className={s.dateInput}>
+                          <DatePicker
+                            value={date}
+                            max={todayIso()}
+                            onChange={setDate}
+                            ariaLabel="Datum"
+                          />
+                        </span>
                       </div>
                     </div>
                   ) : (
@@ -336,12 +306,10 @@ export function EntrySheet() {
 
                       <div>
                         <label className="fieldLabel" htmlFor="entry-start">Läuft seit</label>
-                        <input
+                        <DatePicker
                           id="entry-start"
-                          type="date"
-                          className="input"
                           value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
+                          onChange={setStartDate}
                         />
                         <p className="fieldHint">
                           Frühere Zeiträume bleiben unberührt — die Kosten zählen erst ab diesem Datum.
@@ -357,25 +325,40 @@ export function EntrySheet() {
                     </>
                   )}
 
-                  {/* Optionales Feld erst auf Wunsch - sichtbare Felder zu
-                      minimieren senkt die wahrgenommene Formularlast. */}
-                  {noteVisible ? (
-                    <div>
-                      <label className="fieldLabel" htmlFor="entry-note">Notiz</label>
-                      <textarea
-                        id="entry-note"
-                        className="textarea"
-                        value={note}
-                        maxLength={280}
-                        onChange={(e) => setNote(e.target.value)}
-                        placeholder="z. B. Rewe, Wocheneinkauf"
-                      />
+                  <div>
+                    <label className="fieldLabel" htmlFor="entry-note">Notiz</label>
+                    <textarea
+                      id="entry-note"
+                      className="textarea"
+                      value={note}
+                      maxLength={280}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder="z. B. Rewe, Wocheneinkauf"
+                    />
+                  </div>
+
+                  <div>
+                    <span className="fieldLabel">Kategorie</span>
+                    <div className={s.categoryGrid} role="radiogroup" aria-label="Kategorie">
+                      {orderedCategories.map((category) => {
+                        const selected = category.id === categoryId;
+                        return (
+                          <button
+                            key={category.id}
+                            type="button"
+                            role="radio"
+                            aria-checked={selected}
+                            className={`${s.categoryTile} ${selected ? s.categoryTileSelected : ''}`}
+                            style={categoryColorVars(category.color)}
+                            onClick={() => setCategoryId(category.id)}
+                          >
+                            <CategoryIcon name={category.icon} size={20} />
+                            <span className={s.categoryTileLabel}>{category.name}</span>
+                          </button>
+                        );
+                      })}
                     </div>
-                  ) : (
-                    <button type="button" className={s.noteToggle} onClick={() => setNoteVisible(true)}>
-                      + Notiz hinzufügen
-                    </button>
-                  )}
+                  </div>
 
                   {isEditing && (
                     <div className={s.deleteRow}>

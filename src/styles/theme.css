@@ -18,7 +18,7 @@
   --bg-canvas: var(--gold-2);
   --bg-surface: var(--gold-1);
   --bg-subtle: var(--gold-3);     /* Eingabefelder, Chart-Spuren, Chips   */
-  --bg-hover: var(--sand-2);
+  --bg-hover: var(--gold-4);
   --bg-active: var(--gold-5);
   /* Eine Stufe ueber ALLEN anderen Flaechen - fuer Elemente, die aus einer
      gefuellten Spur herausstehen sollen (aktives Segment). Im Dunkelmodus

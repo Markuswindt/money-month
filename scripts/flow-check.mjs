@@ -35,8 +35,7 @@ step('Betrag als 42,50 € formatiert', shown.replace(/ | /g, ' ').includes('
 await page.getByRole('radio', { name: /Lebensmittel/ }).click();
 step('Kategorie gewählt', await page.getByRole('radio', { name: /Lebensmittel/ }).getAttribute('aria-checked') === 'true');
 
-// Notiz
-await page.getByRole('button', { name: '+ Notiz hinzufügen' }).click();
+// Notiz - jetzt immer sichtbar, kein Aufklapp-Knopf mehr noetig
 await page.locator('#entry-note').fill('Playwright-Test');
 
 await page.getByRole('button', { name: 'Speichern', exact: true }).click();

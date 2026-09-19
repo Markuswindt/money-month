@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { NavLink, useLocation } from 'react-router';
+import { NavLink } from 'react-router';
 import { LayoutGrid, Plus, Receipt, Repeat, Settings } from 'lucide-react';
 import s from './AppShell.module.css';
 
@@ -17,7 +17,7 @@ function TabLink({ to, label, Icon, end }: (typeof TABS)[number]) {
       end={end}
       className={({ isActive }) => (isActive ? `${s.tab} ${s.tabActive}` : s.tab)}
     >
-      <Icon size={24} strokeWidth={1.75} aria-hidden />
+      <Icon size={20} strokeWidth={1.75} aria-hidden />
       {label}
     </NavLink>
   );
@@ -33,10 +33,6 @@ function TabLink({ to, label, Icon, end }: (typeof TABS)[number]) {
  * von der Navigation abheben, nicht nur durch die Farbe.
  */
 export function AppShell({ children, onAdd }: { children: ReactNode; onAdd: () => void }) {
-  // Unter "Mehr" wird nichts erfasst. Sichtbarkeit statt Unmount, damit die
-  // Tab-Pille ihre Breite nicht aendert, wenn der Knopf verschwindet.
-  const showAdd = !useLocation().pathname.startsWith('/mehr');
-
   return (
     <div className={s.shell}>
       <nav className={s.navRow} aria-label="Hauptnavigation">
@@ -47,7 +43,6 @@ export function AppShell({ children, onAdd }: { children: ReactNode; onAdd: () =
           className={s.fab}
           onClick={onAdd}
           aria-label="Ausgabe erfassen"
-          style={showAdd ? undefined : { visibility: 'hidden' }}
         >
           <Plus size={24} strokeWidth={2} aria-hidden />
           <span className={s.fabLabel}>Erfassen</span>
